@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const { SERVER_PORT } = require("./env");
-console.log("SERVER_PORT: ", SERVER_PORT);
+const mongoose = require("mongoose");
+const { SERVER_PORT, DB_PORT, DB_HOST } = require("./env");
 
 const app = express();
 
@@ -21,13 +21,18 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+require("./routes")(app);
 
-const server = app.listen(SERVER_PORT, () => {
-  console.log(`Server is listening on : ${SERVER_PORT}`);
-});
+mongoose
+  .connect(`mongodb://${DB_HOST}:${DB_PORT}`)
+  .then((server) => {
+    app.listen(SERVER_PORT, () => {
+      console.log(`Server is listening on : ${SERVER_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 process.on("unhandledRejection", (error) => {
   console.error("unhandledRejection", JSON.stringify(error), error.stack);
@@ -44,5 +49,3 @@ process.on("beforeExit", () => {
     if (error) console.error(JSON.stringify(error), error.stack);
   });
 });
-
-module.exports = server;
