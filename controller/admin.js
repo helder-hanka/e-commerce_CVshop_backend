@@ -1,4 +1,4 @@
-const Product = require("../model/product");
+const Product = require("../model/admin");
 const { validationResult } = require("express-validator");
 
 const createProduct = async (req, res, next) => {
@@ -6,8 +6,11 @@ const createProduct = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
+  // const admin = {
+  //   _id: "62699cc64ae9329b383dbe71",
+  // };
   const admin = {
-    _id: "62699cc64ae9329b383dbe71",
+    _id: "62699cc64ae9329b383dbe84",
   };
   const product = new Product({
     title: req.body.title,

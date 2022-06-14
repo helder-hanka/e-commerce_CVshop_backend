@@ -1,5 +1,5 @@
-const products = require("./product");
+const products = require("./admin");
 
 module.exports = (app) => {
-  app.use("/product", products);
+  app.use("/admin", products);
 };
