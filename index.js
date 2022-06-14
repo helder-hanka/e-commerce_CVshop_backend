@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const { SERVER_PORT, DB_PORT, DB_HOST } = require("./env");
 
 const app = express();
@@ -14,6 +15,18 @@ app.use(
     origin: "http://localhost:3001",
   })
 );
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 app.use((req, res, next) => {
   const totalCount = req.headers["x-total-count"];
   console.log("totalCount :", totalCount);
@@ -24,7 +37,7 @@ app.use((req, res, next) => {
 require("./routes")(app);
 
 mongoose
-  .connect(`mongodb://${DB_HOST}:${DB_PORT}`)
+  .connect(`mongodb://${DB_HOST}:${DB_PORT}/CVshop`)
   .then((server) => {
     app.listen(SERVER_PORT, () => {
       console.log(`Server is listening on : ${SERVER_PORT}`);

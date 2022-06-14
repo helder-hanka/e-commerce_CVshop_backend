@@ -1,5 +1,5 @@
-const acceuille = require("./accuille");
+const products = require("./product");
 
 module.exports = (app) => {
-  app.use("/", acceuille);
+  app.use("/product", products);
 };
