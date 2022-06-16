@@ -21,7 +21,6 @@ const createProduct = async (req, res, next) => {
     price: req.body.price,
     category: req.body.category,
     confirmDisplay: req.body.confirmDisplay,
-    productsNumber: req.body.productsNumber,
     admin: admin,
   });
   console.log("Pduct: ", product);

@@ -47,10 +47,6 @@ const productsSchema = new Schema(
       required: true,
       ref: "admin",
     },
-    productsNumber: {
-      type: Number,
-      required: true,
-    },
   },
   { timestamps: true }
 );

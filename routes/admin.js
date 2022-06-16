@@ -44,7 +44,6 @@ router.post(
       "confirmDisplay",
       "Please confirm the display true or false"
     ).isBoolean(),
-    body("productsNumber", "Please enter a number").trim().isInt(),
   ],
   productController.createProduct
 );
