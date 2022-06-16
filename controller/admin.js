@@ -23,7 +23,7 @@ const createProduct = async (req, res, next) => {
     like: req.body.like,
     quantity: req.body.quantity,
     price: req.body.price,
-    category: req.body.category,
+    category: req.body.category.toLowerCase(),
     confirmDisplay: req.body.confirmDisplay,
     admin: admin,
   });
@@ -77,8 +77,28 @@ const getProductsNameTitleAll = async (req, res, next) => {
   }
 };
 
+const getProductsNameCategoryAll = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  const category = req.params.name.toLowerCase();
+  console.log("category: ", category);
+  const admin = admin2._id;
+  try {
+    const products = await Product.find({ category: category, admin: admin });
+    if (products.length <= 0) {
+      return res.status(404).json({ message: "Could not find products !" });
+    }
+    res.status(200).json({ message: "Products fetched", products: products });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   createProduct,
   getProductsIdAll,
   getProductsNameTitleAll,
+  getProductsNameCategoryAll,
 };

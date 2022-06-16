@@ -48,5 +48,6 @@ router.post(
   productController.createProduct
 );
 router.get("/", productController.getProductsIdAll);
-router.get("/:name", productController.getProductsNameTitleAll);
+router.get("/title/:name", productController.getProductsNameTitleAll);
+router.get("/category/:name", productController.getProductsNameCategoryAll);
 module.exports = router;
