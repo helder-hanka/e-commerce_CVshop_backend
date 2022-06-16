@@ -65,7 +65,7 @@ const getProductsNameTitleAll = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   const title = req.params.name.toLowerCase();
-  const admin = admin2._id;
+  const admin = admin1._id;
   try {
     const products = await Product.find({ title: title, admin: admin });
     if (products.length <= 0) {
@@ -83,7 +83,6 @@ const getProductsNameCategoryAll = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   const category = req.params.name.toLowerCase();
-  console.log("category: ", category);
   const admin = admin2._id;
   try {
     const products = await Product.find({ category: category, admin: admin });
