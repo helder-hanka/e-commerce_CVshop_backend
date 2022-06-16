@@ -48,4 +48,5 @@ router.post(
   productController.createProduct
 );
 router.get("/", productController.getProductsIdAll);
+router.get("/:name", productController.getProductsNameTitleAll);
 module.exports = router;
