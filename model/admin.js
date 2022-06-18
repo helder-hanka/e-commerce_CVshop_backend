@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
-var adminSchema = new Schema({
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const adminSchema = new Schema({
   email: {
     type: String,
     required: true,
