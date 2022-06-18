@@ -50,4 +50,5 @@ router.post(
 router.get("/", productController.getProductsIdAll);
 router.get("/title/:name", productController.getProductsNameTitleAll);
 router.get("/category/:name", productController.getProductsNameCategoryAll);
+router.get("/:id", productController.getProductId);
 module.exports = router;

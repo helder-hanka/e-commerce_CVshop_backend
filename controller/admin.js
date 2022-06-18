@@ -1,11 +1,21 @@
-const Product = require("../model/admin");
 const { validationResult } = require("express-validator");
+const Product = require("../model/product");
+const Admin = require("../model/admin");
+
+// const a = new Admin({
+//   email: "test@gmail.com",
+//   password: "azerty",
+// });
+// a.save();
 
 const admin1 = {
   _id: "62699cc64ae9329b383dbe71",
 };
 const admin2 = {
   _id: "62699cc64ae9329b383dbe84",
+};
+const admin3 = {
+  _id: "62ae4bab90595ba44d545422",
 };
 
 const createProduct = async (req, res, next) => {
@@ -95,9 +105,35 @@ const getProductsNameCategoryAll = async (req, res, next) => {
   }
 };
 
+const getProductId = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  const id = req.params.id;
+  const admin = admin3._id;
+  try {
+    const products = await Product.findById(id).populate("admin"); // schema admin a crée
+    console.log("admin: ", admin, "Product: ", products);
+    if (admin !== products.admin._id.toString()) {
+      const error = new Error("Not authorized");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({ message: "Products fetched", products: products });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   createProduct,
   getProductsIdAll,
   getProductsNameTitleAll,
   getProductsNameCategoryAll,
+  getProductId,
 };
