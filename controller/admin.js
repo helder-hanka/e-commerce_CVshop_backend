@@ -37,7 +37,6 @@ const createProduct = async (req, res, next) => {
     confirmDisplay: req.body.confirmDisplay,
     admin: admin,
   });
-  console.log("Pduct: ", product);
   try {
     await product.save();
     res.status(201).json({
@@ -46,7 +45,8 @@ const createProduct = async (req, res, next) => {
       creator: { _id: admin._id, name: "test" },
     });
   } catch (err) {
-    console.log(err);
+    console.error(err.message);
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
@@ -93,15 +93,19 @@ const getProductsNameCategoryAll = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   const category = req.params.name.toLowerCase();
-  const admin = admin2._id;
+  const admin = admin3._id;
   try {
     const products = await Product.find({ category: category, admin: admin });
     if (products.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
     }
+    // const products = await Product.find({ category: category, admin: admin });
     res.status(200).json({ message: "Products fetched", products: products });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
@@ -114,7 +118,7 @@ const getProductId = async (req, res, next) => {
   const id = req.params.id;
   const admin = admin3._id;
   try {
-    const products = await Product.findById(id).populate("admin"); // schema admin a crée
+    const products = await Product.findById(id).populate("admin");
     console.log("admin: ", admin, "Product: ", products);
     if (admin !== products.admin._id.toString()) {
       const error = new Error("Not authorized");
