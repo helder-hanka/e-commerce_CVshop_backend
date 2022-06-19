@@ -50,4 +50,5 @@ router.get("/", productController.getProductsAdminIdAll);
 router.get("/title/:name", productController.getProductsNameTitleAll);
 router.get("/category/:name", productController.getProductsNameCategoryAll);
 router.get("/:id", productController.getProductId);
+router.put("/:id", productController.updateProduct);
 module.exports = router;

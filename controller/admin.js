@@ -155,10 +155,68 @@ const getProductId = async (req, res, next) => {
   }
 };
 
+const updateProduct = async (req, res, next) => {
+  const id = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, entered data is incorrect");
+    error.statusCode = 422;
+    throw error;
+  }
+  const admin = admin1._id;
+
+  const title = req.body.title.toLowerCase();
+  const description = req.body.description;
+  const imageUrl = req.body.imageUrl;
+  const like = req.body.like;
+  const quantity = req.body.quantity;
+  const price = req.body.price;
+  const category = req.body.category.toLowerCase();
+  const confirmDisplay = req.body.confirmDisplay;
+
+  try {
+    const product = await Product.findById(id).populate({
+      path: "admin",
+      select: "email",
+    });
+    console.log("admin: ", admin, "Product: ", product.admin._id.toString());
+    if (!product) {
+      const error = new Error("Could not find post.");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (admin !== product.admin._id.toString()) {
+      const error = new Error("Not authorized");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    product.title = title;
+    product.description = description;
+    product.imageUrl = imageUrl;
+    product.like = like;
+    product.quantity = quantity;
+    product.price = price;
+    product.category = category.toLowerCase();
+    product.confirmDisplay = confirmDisplay;
+    const result = await product.save();
+    res.status(200).json({
+      message: "Product updated",
+      product: result,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   createProduct,
   getProductsAdminIdAll,
   getProductsNameTitleAll,
   getProductsNameCategoryAll,
   getProductId,
+  updateProduct,
 };
