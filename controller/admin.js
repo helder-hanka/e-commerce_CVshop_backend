@@ -104,19 +104,21 @@ const getProductsNameTitleAll = async (req, res, next) => {
 };
 
 const getProductsNameCategoryAll = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
   const category = req.params.name.toLowerCase();
   const admin = admin3._id;
   try {
-    const products = await Product.find({ category: category, admin: admin });
+    const products = await Product.find({
+      category: category,
+      admin: admin,
+    }).populate({
+      path: "admin",
+      select: "email",
+    });
+    const result = await products.filter((p) => p.admin._id.toString());
     if (products.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
     }
-    // const products = await Product.find({ category: category, admin: admin });
-    res.status(200).json({ message: "Products fetched", products: products });
+    res.status(200).json({ message: "Products fetched", products: result });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
