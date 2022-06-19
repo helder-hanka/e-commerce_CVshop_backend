@@ -143,7 +143,6 @@ const getProductId = async (req, res, next) => {
       path: "admin",
       select: "email",
     });
-    console.log("admin: ", admin, "Product: ", products);
     if (admin !== products.admin._id.toString()) {
       const error = new Error("Not authorized");
       error.statusCode = 404;
@@ -166,7 +165,7 @@ const updateProduct = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  const admin = admin1._id;
+  const admin = admin3._id;
 
   const title = req.body.title.toLowerCase();
   const description = req.body.description;
@@ -178,11 +177,14 @@ const updateProduct = async (req, res, next) => {
   const confirmDisplay = req.body.confirmDisplay;
 
   try {
-    const product = await Product.findById(id).populate({
+    const product = await Product.findById(
+      { _id: id },
+      { admin: admin },
+      { updatedAt: new Date() }
+    ).populate({
       path: "admin",
       select: "email",
     });
-    console.log("admin: ", admin, "Product: ", product.admin._id.toString());
     if (!product) {
       const error = new Error("Could not find post.");
       error.statusCode = 404;
