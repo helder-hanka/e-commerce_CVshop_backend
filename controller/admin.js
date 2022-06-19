@@ -17,6 +17,9 @@ const admin2 = {
 const admin3 = {
   _id: "62ae4bab90595ba44d545422",
 };
+const admin4 = {
+  _id: "62ae53456aed6b27bc7d50b4",
+};
 
 const createProduct = async (req, res, next) => {
   const errors = validationResult(req);
@@ -24,7 +27,7 @@ const createProduct = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
 
-  const admin = admin2;
+  const admin = admin3;
 
   const product = new Product({
     title: req.body.title.toLowerCase(),
