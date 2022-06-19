@@ -139,7 +139,10 @@ const getProductId = async (req, res, next) => {
   const id = req.params.id;
   const admin = admin3._id;
   try {
-    const products = await Product.findById(id).populate("admin");
+    const products = await Product.findById(id).populate({
+      path: "admin",
+      select: "email",
+    });
     console.log("admin: ", admin, "Product: ", products);
     if (admin !== products.admin._id.toString()) {
       const error = new Error("Not authorized");
