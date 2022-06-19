@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const Product = require("../model/product");
 const Admin = require("../model/admin");
+const product = require("../model/product");
 
 // const a = new Admin({
 //   email: "test@gmail.com",
@@ -19,6 +20,9 @@ const admin3 = {
 };
 const admin4 = {
   _id: "62ae53456aed6b27bc7d50b4",
+};
+const product1 = {
+  _id: "62ae7003269decb4258d4fac",
 };
 
 const createProduct = async (req, res, next) => {
@@ -59,16 +63,29 @@ const getProductsAdminIdAll = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
 
-  const admin = admin1;
+  const admin = admin3._id;
 
   try {
-    const products = await Product.find({ admin: admin._id });
-    if (products.length <= 0) {
+    const products = await Product.find({ admin: admin }).populate({
+      path: "admin",
+      select: "email",
+    });
+    const result = await products.filter(
+      (p) => p.admin._id.toString() && p.confirmDisplay
+    );
+
+    if (result.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
     }
-    res.status(200).json({ message: "Products fetched", products: products });
+    res.status(200).json({
+      message: "Products fetched",
+      products: result,
+    });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
@@ -86,7 +103,10 @@ const getProductsNameTitleAll = async (req, res, next) => {
     }
     res.status(200).json({ message: "Products fetched", products: products });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
