@@ -70,9 +70,7 @@ const getProductsAdminIdAll = async (req, res, next) => {
       path: "admin",
       select: "email",
     });
-    const result = await products.filter(
-      (p) => p.admin._id.toString() && p.confirmDisplay
-    );
+    const result = await products.filter((p) => p.admin._id.toString());
 
     if (result.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
