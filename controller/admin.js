@@ -89,7 +89,10 @@ const getProductsNameTitleAll = async (req, res, next) => {
     const products = await Product.find({
       title: title,
       admin: admin,
-    }).populate();
+    }).populate({
+      path: "admin",
+      select: "email",
+    });
     const result = await products.filter((p) => p.admin._id.toString());
     if (products.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
