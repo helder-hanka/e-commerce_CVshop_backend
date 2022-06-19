@@ -53,7 +53,7 @@ const createProduct = async (req, res, next) => {
   }
 };
 
-const getProductsIdAll = async (req, res, next) => {
+const getProductsAdminIdAll = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -139,7 +139,7 @@ const getProductId = async (req, res, next) => {
 
 module.exports = {
   createProduct,
-  getProductsIdAll,
+  getProductsAdminIdAll,
   getProductsNameTitleAll,
   getProductsNameCategoryAll,
   getProductId,
