@@ -1,7 +1,8 @@
 const { validationResult } = require("express-validator");
 const Product = require("../model/product");
 const Admin = require("../model/admin");
-const product = require("../model/product");
+const ProductsDeleted = require("../model/productsDeleted");
+// const product = require("../model/product");
 
 // const a = new Admin({
 //   email: "test@gmail.com",
@@ -9,14 +10,28 @@ const product = require("../model/product");
 // });
 // a.save();
 
+// const post = new ProductsDeleted({
+//   productId: "62b0cdc3bdf504f34ce4aa1a",
+//   title: "product.title",
+//   description: "product.description",
+//   imageUrl: "product.imageUrl",
+//   like: 1,
+//   quantity: 2,
+//   price: 2,
+//   category: "cars",
+//   confirmDisplay: true,
+//   admin: "62b0cf62ab63b161acaaabc1",
+// });
+// post.save();
+
 const admin1 = {
-  _id: "62699cc64ae9329b383dbe71",
+  _id: "62b0cf62ab63b161acaaabc1",
 };
 const admin2 = {
-  _id: "62699cc64ae9329b383dbe84",
+  _id: "62b0cf89977a00d1d2bfa514",
 };
 const admin3 = {
-  _id: "62ae4bab90595ba44d545422",
+  _id: "",
 };
 const admin4 = {
   _id: "62ae53456aed6b27bc7d50b4",
@@ -31,7 +46,7 @@ const createProduct = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
 
-  const admin = admin3;
+  const admin = admin1;
 
   const product = new Product({
     title: req.body.title.toLowerCase(),
@@ -58,7 +73,7 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProductsAdminIdAll = async (req, res, next) => {
-  const admin = admin3._id;
+  const admin = admin1._id;
 
   try {
     const products = await Product.find({ admin: admin }).populate({
@@ -84,7 +99,7 @@ const getProductsAdminIdAll = async (req, res, next) => {
 
 const getProductsNameTitleAll = async (req, res, next) => {
   const title = req.params.name.toLowerCase();
-  const admin = admin3._id;
+  const admin = admin1._id;
   try {
     const products = await Product.find({
       title: title,
@@ -108,7 +123,7 @@ const getProductsNameTitleAll = async (req, res, next) => {
 
 const getProductsNameCategoryAll = async (req, res, next) => {
   const category = req.params.name.toLowerCase();
-  const admin = admin3._id;
+  const admin = admin1._id;
   try {
     const products = await Product.find({
       category: category,
@@ -137,16 +152,18 @@ const getProductId = async (req, res, next) => {
   }
 
   const id = req.params.id;
-  const admin = admin3._id;
+  const admin = admin1._id;
   try {
     const products = await Product.findById(id).populate({
       path: "admin",
       select: "email",
     });
+
+    if (!products || !products.admin._id.toString()) {
+      return res.status(404).json({ message: "Could not find product" });
+    }
     if (admin !== products.admin._id.toString()) {
-      const error = new Error("Not authorized");
-      error.statusCode = 404;
-      throw error;
+      return res.status(404).json({ message: "Not authorized" });
     }
     res.status(200).json({ message: "Products fetched", products: products });
   } catch (err) {
@@ -161,11 +178,9 @@ const updateProduct = async (req, res, next) => {
   const id = req.params.id;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error("Validation failed, entered data is incorrect");
-    error.statusCode = 422;
-    throw error;
+    return res.status(422).json({ errors: errors.array() });
   }
-  const admin = admin3._id;
+  const admin = admin1._id;
 
   const title = req.body.title.toLowerCase();
   const description = req.body.description;
@@ -177,23 +192,15 @@ const updateProduct = async (req, res, next) => {
   const confirmDisplay = req.body.confirmDisplay;
 
   try {
-    const product = await Product.findById(
-      { _id: id },
-      { admin: admin },
-      { updatedAt: new Date() }
-    ).populate({
+    const product = await Product.findById(id).populate({
       path: "admin",
       select: "email",
     });
-    if (!product) {
-      const error = new Error("Could not find post.");
-      error.statusCode = 404;
-      throw error;
+    if (!product || !product.admin) {
+      return res.status(404).json({ message: "Could not find product" });
     }
     if (admin !== product.admin._id.toString()) {
-      const error = new Error("Not authorized");
-      error.statusCode = 404;
-      throw error;
+      return res.status(404).json({ message: "Not authorized" });
     }
 
     product.title = title;
@@ -217,6 +224,41 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
+const deleteProduct = async (req, res, next) => {
+  const id = req.params.id;
+  const admin = admin1._id;
+  try {
+    const product = await Product.findById(id);
+    if (!product || !product.admin.toString()) {
+      return res.status(404).json({ message: "Could not find product!" });
+    }
+    if (admin !== product.admin.toString()) {
+      return res.status(404).json({ message: "Not authorized" });
+    }
+    const post = new ProductsDeleted({
+      productId: product._id.toString(),
+      title: product.title,
+      description: product.description,
+      imageUrl: product.imageUrl,
+      like: product.like,
+      quantity: product.quantity,
+      price: product.price,
+      category: product.category,
+      confirmDisplay: product.confirmDisplay,
+      admin: product.admin.toString(),
+    });
+    await post.save();
+    await Product.findByIdAndRemove(id);
+    console.log(post);
+    res.status(200).json({ message: "Deleted post." });
+  } catch (error) {
+    if (!err.statusCode) {
+      error.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   createProduct,
   getProductsAdminIdAll,
@@ -224,4 +266,5 @@ module.exports = {
   getProductsNameCategoryAll,
   getProductId,
   updateProduct,
+  deleteProduct,
 };
