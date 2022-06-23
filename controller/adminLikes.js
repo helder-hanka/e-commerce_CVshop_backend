@@ -1,6 +1,6 @@
 const Like = require("../model/adminLikes");
 
-const getLikesById = async (req, res, nesxt) => {
+const getLikesById = async (req, res, next) => {
   const adminId = req.params.id;
   try {
     const likes = await Like.find({ admin: adminId }).populate({
