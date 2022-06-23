@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
-const productController = require("../controller/admin");
+const productController = require("../controller/adminProducts");
 
 router.post(
   "/",
