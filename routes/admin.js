@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
 const productController = require("../controller/adminProducts");
+const adminLikesController = require("../controller/adminLikes");
 
 router.post(
   "/",
@@ -95,4 +96,5 @@ router.put(
   productController.updateProduct
 );
 router.delete("/:id", productController.deleteProduct);
+router.get("/like/:id", adminLikesController.getLikesById);
 module.exports = router;
