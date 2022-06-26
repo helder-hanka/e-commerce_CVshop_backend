@@ -3,9 +3,11 @@ const { body } = require("express-validator");
 const productController = require("../controller/adminProducts");
 const adminLikesController = require("../controller/adminLikes");
 const adminAdress = require("../controller/adminAdress");
+const uploadImagesProducts = require("../middlewares/multerProducts");
 
 router.post(
   "/",
+  uploadImagesProducts.array("images", 4),
   [
     body("title", "Please enter a text end least 3 characters")
       .trim()

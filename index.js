@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const path = require("path");
 const { SERVER_PORT, DB_PORT, DB_HOST } = require("./env");
 
 const app = express();
@@ -16,6 +17,8 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+
+app.use("./images/products", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

@@ -2,27 +2,7 @@ const { validationResult } = require("express-validator");
 const Product = require("../model/product");
 const Admin = require("../model/admin");
 const ProductsDeleted = require("../model/productsDeleted");
-// const product = require("../model/product");
-
-// const a = new Admin({
-//   email: "test@gmail.com",
-//   password: "azerty",
-// });
-// a.save();
-
-// const post = new ProductsDeleted({
-//   productId: "62b0cdc3bdf504f34ce4aa1a",
-//   title: "product.title",
-//   description: "product.description",
-//   imageUrl: "product.imageUrl",
-//   like: 1,
-//   quantity: 2,
-//   price: 2,
-//   category: "cars",
-//   confirmDisplay: true,
-//   admin: "62b0cf62ab63b161acaaabc1",
-// });
-// post.save();
+// const path = require("path");
 
 const admin1 = {
   _id: "62b0cf62ab63b161acaaabc1",
@@ -40,18 +20,22 @@ const product1 = {
   _id: "62ae7003269decb4258d4fac",
 };
 
+const admin = admin1._id;
+
 const createProduct = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
 
-  const admin = admin1;
-
+  if (!req.files.length) {
+    return res.status(422).json({ message: "No image provided" });
+  }
+  const files = req.files.map((p) => p.path);
   const product = new Product({
     title: req.body.title.toLowerCase(),
     description: req.body.description,
-    imageUrl: req.body.imageUrl,
+    imageUrl: files,
     like: req.body.like,
     quantity: req.body.quantity,
     price: req.body.price,
@@ -73,8 +57,6 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProductsAdminIdAll = async (req, res, next) => {
-  const admin = admin1._id;
-
   try {
     const products = await Product.find({ admin: admin }).populate({
       path: "admin",
