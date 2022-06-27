@@ -2,7 +2,8 @@ const { validationResult } = require("express-validator");
 const Product = require("../model/product");
 const Admin = require("../model/admin");
 const ProductsDeleted = require("../model/productsDeleted");
-// const path = require("path");
+const path = require("path");
+const fs = require("fs");
 
 const admin1 = {
   _id: "62b0cf62ab63b161acaaabc1",
@@ -166,12 +167,20 @@ const updateProduct = async (req, res, next) => {
 
   const title = req.body.title.toLowerCase();
   const description = req.body.description;
-  const imageUrl = req.body.imageUrl;
+  let imageUrl = req.body.images;
   const like = req.body.like;
   const quantity = req.body.quantity;
   const price = req.body.price;
   const category = req.body.category.toLowerCase();
   const confirmDisplay = req.body.confirmDisplay;
+
+  if (req.files.length) {
+    const files = req.files.map((p) => p.path);
+    imageUrl = files;
+  }
+  if (!imageUrl) {
+    return res.status(422).json({ message: "No file picked.!" });
+  }
 
   try {
     const product = await Product.findById(id).populate({
@@ -185,6 +194,14 @@ const updateProduct = async (req, res, next) => {
       return res.status(404).json({ message: "Not authorized" });
     }
 
+    const array3 = product.imageUrl.filter(
+      (entry1) => !imageUrl.some((entry2) => entry1 === entry2)
+    );
+
+    if (array3.length) {
+      array3.map((x) => clearImage(x));
+    }
+
     product.title = title;
     product.description = description;
     product.imageUrl = imageUrl;
@@ -194,6 +211,7 @@ const updateProduct = async (req, res, next) => {
     product.category = category.toLowerCase();
     product.confirmDisplay = confirmDisplay;
     const result = await product.save();
+
     res.status(200).json({
       message: "Product updated",
       product: result,
@@ -239,6 +257,11 @@ const deleteProduct = async (req, res, next) => {
     }
     next(err);
   }
+};
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => console.log(err));
 };
 
 module.exports = {

@@ -56,6 +56,7 @@ router.get("/category/:name", productController.getProductsNameCategoryAll);
 router.get("/:id", productController.getProductId);
 router.put(
   "/:id",
+  uploadImagesProducts.array("images", 4),
   [
     body("title", "Please enter a text end least 3 characters")
       .trim()
