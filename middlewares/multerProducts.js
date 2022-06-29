@@ -15,7 +15,14 @@ const fileStorageEngine = multer.diskStorage({
       const message = `${file.originalname} is invalid. Only accept image/png", "image/jpeg", "image/jpg.`;
       return cb(null, message);
     }
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        Math.round(Math.random() * 1e9) +
+        "_" +
+        file.originalname
+    );
   },
 });
 const upload = multer({ storage: fileStorageEngine });
