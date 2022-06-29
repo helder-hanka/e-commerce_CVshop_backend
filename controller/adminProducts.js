@@ -4,6 +4,7 @@ const Admin = require("../model/admin");
 const ProductsDeleted = require("../model/productsDeleted");
 const path = require("path");
 const fs = require("fs");
+const fse = require("fs-extra");
 
 const admin1 = {
   _id: "62b0cf62ab63b161acaaabc1",
@@ -141,13 +142,22 @@ const getProductId = async (req, res, next) => {
       path: "admin",
       select: "email",
     });
-
     if (!products || !products.admin._id.toString()) {
       return res.status(404).json({ message: "Could not find product" });
     }
     if (admin !== products.admin._id.toString()) {
       return res.status(404).json({ message: "Not authorized" });
     }
+
+    // const resultImg = await products.imageUrl.map((p) => {
+    //   fse.copy(`${p}`, `./images/productsDelete/${p.slice(16)}`, (err) => {
+    //     if (err) return console.error(err);
+    //     console.log("success!");
+    //   });
+    // });
+
+    // console.log(resultImg);
+
     res.status(200).json({ message: "Products fetched", products: products });
   } catch (err) {
     if (!err.statusCode) {
@@ -235,11 +245,19 @@ const deleteProduct = async (req, res, next) => {
     if (admin !== product.admin.toString()) {
       return res.status(404).json({ message: "Not authorized" });
     }
+    const productImg = product.imageUrl;
+
+    const resultImg = productImg.map((img) => {
+      const i = img.slice(16);
+      return `images/productsDelete/${i}`;
+    });
+
+    postImgInProductSDelete(productImg);
     const post = new ProductsDeleted({
       productId: product._id.toString(),
       title: product.title,
       description: product.description,
-      imageUrl: product.imageUrl,
+      imageUrl: resultImg,
       like: product.like,
       quantity: product.quantity,
       price: product.price,
@@ -249,14 +267,22 @@ const deleteProduct = async (req, res, next) => {
     });
     await post.save();
     await Product.findByIdAndRemove(id);
-    console.log(post);
     res.status(200).json({ message: "Deleted post." });
-  } catch (error) {
+  } catch (err) {
     if (!err.statusCode) {
-      error.statusCode = 500;
+      err.statusCode = 500;
     }
     next(err);
   }
+};
+
+const postImgInProductSDelete = (src) => {
+  src.map((i) =>
+    fse.move(i, `./images/productsDelete/${i.slice(16)}`, (err) => {
+      if (err) return console.error(err);
+      console.log("success!");
+    })
+  );
 };
 
 const clearImage = (filePath) => {

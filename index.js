@@ -19,6 +19,10 @@ app.use(
 app.use(bodyParser.json());
 
 app.use("./images/products", express.static(path.join(__dirname, "images")));
+app.use(
+  "./images/productsDelete",
+  express.static(path.join(__dirname, "images"))
+);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
