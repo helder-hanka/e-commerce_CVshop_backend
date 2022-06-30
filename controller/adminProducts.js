@@ -134,7 +134,6 @@ const getProductId = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-
   const id = req.params.id;
   const admin = admin1._id;
   try {
@@ -148,16 +147,6 @@ const getProductId = async (req, res, next) => {
     if (admin !== products.admin._id.toString()) {
       return res.status(404).json({ message: "Not authorized" });
     }
-
-    // const resultImg = await products.imageUrl.map((p) => {
-    //   fse.copy(`${p}`, `./images/productsDelete/${p.slice(16)}`, (err) => {
-    //     if (err) return console.error(err);
-    //     console.log("success!");
-    //   });
-    // });
-
-    // console.log(resultImg);
-
     res.status(200).json({ message: "Products fetched", products: products });
   } catch (err) {
     if (!err.statusCode) {
@@ -174,7 +163,6 @@ const updateProduct = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   const admin = admin1._id;
-
   const title = req.body.title.toLowerCase();
   const description = req.body.description;
   let imageUrl = req.body.images;
@@ -252,7 +240,7 @@ const deleteProduct = async (req, res, next) => {
       return `images/productsDelete/${i}`;
     });
 
-    postImgInProductSDelete(productImg);
+    moveImgInProductSDelete(productImg);
     const post = new ProductsDeleted({
       productId: product._id.toString(),
       title: product.title,
@@ -276,7 +264,7 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
-const postImgInProductSDelete = (src) => {
+const moveImgInProductSDelete = (src) => {
   src.map((i) =>
     fse.move(i, `./images/productsDelete/${i.slice(16)}`, (err) => {
       if (err) return console.error(err);
