@@ -41,7 +41,6 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProductsAdminIdAll = async (req, res, next) => {
-  console.log(req.userId);
   const admin = req.userId;
   try {
     const products = await Product.find({ admin: admin }).populate({
@@ -258,7 +257,6 @@ const moveImgInProductSDelete = (src) => {
   src.map((i) =>
     fse.move(i, `./images/productsDelete/${i.slice(16)}`, (err) => {
       if (err) return console.error(err);
-      console.log("success!");
     })
   );
 };
