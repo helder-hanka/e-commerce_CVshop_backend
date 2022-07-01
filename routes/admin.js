@@ -4,9 +4,11 @@ const productController = require("../controller/adminProducts");
 const adminLikesController = require("../controller/adminLikes");
 const adminAdress = require("../controller/adminAdress");
 const uploadImagesProducts = require("../middlewares/multerProducts");
+const isAuth = require("../middlewares/is-auth");
 
 router.post(
   "/",
+  isAuth,
   uploadImagesProducts.array("images", 4),
   [
     body("title", "Please enter a text end least 3 characters")
@@ -50,12 +52,17 @@ router.post(
   ],
   productController.createProduct
 );
-router.get("/", productController.getProductsAdminIdAll);
-router.get("/title/:name", productController.getProductsNameTitleAll);
-router.get("/category/:name", productController.getProductsNameCategoryAll);
-router.get("/:id", productController.getProductId);
+router.get("/", isAuth, productController.getProductsAdminIdAll);
+router.get("/title/:name", isAuth, productController.getProductsNameTitleAll);
+router.get(
+  "/category/:name",
+  isAuth,
+  productController.getProductsNameCategoryAll
+);
+router.get("/:id", isAuth, productController.getProductId);
 router.put(
   "/:id",
+  isAuth,
   uploadImagesProducts.array("images", 4),
   [
     body("title", "Please enter a text end least 3 characters")
@@ -99,10 +106,11 @@ router.put(
   ],
   productController.updateProduct
 );
-router.delete("/:id", productController.deleteProduct);
-router.get("/like/:id", adminLikesController.getLikesById);
+router.delete("/:id", isAuth, productController.deleteProduct);
+router.get("/like/:id", isAuth, adminLikesController.getLikesById);
 router.post(
   "/adress",
+  isAuth,
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()
@@ -144,9 +152,10 @@ router.post(
   ],
   adminAdress.createAdress
 );
-router.get("/adress/:id", adminAdress.getAdressById);
+router.get("/adress/:id", isAuth, adminAdress.getAdressById);
 router.put(
   "/adress/:id",
+  isAuth,
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()

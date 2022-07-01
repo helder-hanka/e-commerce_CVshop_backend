@@ -21,7 +21,7 @@ const signup = async (req, res, next) => {
     });
 
     const result = await admin.save();
-    res.status(200).json({ message: "Admin created!", adminId: result._id });
+    res.status(200).json({ message: "Admin created!", userId: result._id });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -33,7 +33,6 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log(req.body);
 
   let loadAdmin;
   try {
@@ -44,24 +43,21 @@ const login = async (req, res, next) => {
       throw error;
     }
     loadAdmin = admin;
-    console.log("ADMIN : ", admin);
     const isEqual = await bcrypt.compare(password, admin.password);
-    console.log("IS EQUAL: ", isEqual);
-
     if (!isEqual) {
       const error = new Error("Wrong passeword!");
       error.statusCode = 401;
       throw error;
     }
-    const token = await jwt.sign(
+    const token = jwt.sign(
       {
         email: loadAdmin.email,
-        adminId: loadAdmin._id.toString(),
+        userId: loadAdmin._id.toString(),
       },
       "cvshop238cvshop238",
       { expiresIn: "1h" }
     );
-    res.status(200).json({ token: token, adminId: loadAdmin._id.toString() });
+    res.status(200).json({ token: token, userId: loadAdmin._id.toString() });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
