@@ -1,30 +1,12 @@
 const { validationResult } = require("express-validator");
 const Product = require("../model/product");
-const Admin = require("../model/admin");
 const ProductsDeleted = require("../model/productsDeleted");
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");
 
-const admin1 = {
-  _id: "62b0cf62ab63b161acaaabc1",
-};
-const admin2 = {
-  _id: "62b0cf89977a00d1d2bfa514",
-};
-const admin3 = {
-  _id: "",
-};
-const admin4 = {
-  _id: "62ae53456aed6b27bc7d50b4",
-};
-const product1 = {
-  _id: "62ae7003269decb4258d4fac",
-};
-
-const admin = admin1._id;
-
 const createProduct = async (req, res, next) => {
+  const admin = req.userId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -59,12 +41,21 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProductsAdminIdAll = async (req, res, next) => {
+  console.log(req.userId);
+  const admin = req.userId;
   try {
     const products = await Product.find({ admin: admin }).populate({
       path: "admin",
       select: "email",
     });
-    const result = await products.filter((p) => p.admin._id.toString());
+
+    const isAdmin = products.map((adm) => adm.admin);
+    if (isAdmin === null) {
+      return res
+        .status(404)
+        .json({ message: "Could not find admin products!" });
+    }
+    const result = products.filter((p) => p.admin.toString());
 
     if (result.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
@@ -83,7 +74,7 @@ const getProductsAdminIdAll = async (req, res, next) => {
 
 const getProductsNameTitleAll = async (req, res, next) => {
   const title = req.params.name.toLowerCase();
-  const admin = admin1._id;
+  const admin = req.userId;
   try {
     const products = await Product.find({
       title: title,
@@ -92,7 +83,7 @@ const getProductsNameTitleAll = async (req, res, next) => {
       path: "admin",
       select: "email",
     });
-    const result = await products.filter((p) => p.admin._id.toString());
+    const result = products.filter((p) => p.admin._id.toString());
     if (products.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
     }
@@ -107,7 +98,7 @@ const getProductsNameTitleAll = async (req, res, next) => {
 
 const getProductsNameCategoryAll = async (req, res, next) => {
   const category = req.params.name.toLowerCase();
-  const admin = admin1._id;
+  const admin = req.userId;
   try {
     const products = await Product.find({
       category: category,
@@ -116,7 +107,7 @@ const getProductsNameCategoryAll = async (req, res, next) => {
       path: "admin",
       select: "email",
     });
-    const result = await products.filter((p) => p.admin._id.toString());
+    const result = products.filter((p) => p.admin._id.toString());
     if (products.length <= 0) {
       return res.status(404).json({ message: "Could not find products !" });
     }
@@ -135,7 +126,7 @@ const getProductId = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   const id = req.params.id;
-  const admin = admin1._id;
+  const admin = req.userId;
   try {
     const products = await Product.findById(id).populate({
       path: "admin",
@@ -162,7 +153,7 @@ const updateProduct = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  const admin = admin1._id;
+  const admin = req.userId;
   const title = req.body.title.toLowerCase();
   const description = req.body.description;
   let imageUrl = req.body.images;
@@ -171,7 +162,6 @@ const updateProduct = async (req, res, next) => {
   const price = req.body.price;
   const category = req.body.category.toLowerCase();
   const confirmDisplay = req.body.confirmDisplay;
-
   if (req.files.length) {
     const files = req.files.map((p) => p.path);
     imageUrl = files;
@@ -224,7 +214,7 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
   const id = req.params.id;
-  const admin = admin1._id;
+  const admin = req.userId;
   try {
     const product = await Product.findById(id);
     if (!product || !product.admin.toString()) {
