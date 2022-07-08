@@ -10,6 +10,12 @@ const likesSchema = new Schema({
     required: true,
     ref: "Admin",
   },
+  users: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Like", likesSchema);

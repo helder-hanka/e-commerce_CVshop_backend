@@ -108,6 +108,24 @@ router.put(
 );
 router.delete("/:id", isAuth, productController.deleteProduct);
 router.get("/like/:id", isAuth, adminLikesController.getLikesById);
+router.put(
+  "/like/:id",
+  isAuth,
+  [
+    body("like", "The like must be a string!")
+      .trim()
+      .isString()
+      .custom((value, { req }) => {
+        const gender = ["Like", "UnLike"];
+        const isValid = gender.some((arr) => arr === req.body.like);
+        if (!isValid) {
+          throw new Error(`Please use this gender: ${gender}`);
+        }
+        return true;
+      }),
+  ],
+  adminLikesController.updateLikes
+);
 router.post(
   "/adress",
   isAuth,
