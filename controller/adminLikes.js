@@ -1,31 +1,6 @@
 const { validationResult } = require("express-validator");
 const Like = require("../model/adminLikes");
 const Admin = require("../model/admin");
-// const { count } = require("../model/adminLikes");
-// const Adress = require("../model/adminAdress");
-
-// const i = new Like({
-//   admin: "62c1e00b27fd0d3186e4e0fa",
-//   likes: 0,
-// });
-
-// i.save();
-
-// const a = new Adress({
-//   firstname: "neusa",
-//   lastname: "fernandes j",
-//   gender: "female",
-//   admin: "62c1e00b27fd0d3186e4e0fa",
-//   imageUrl: "kjhdksqdsqfdf",
-//   address_line_1: "",
-//   address_line_2: "",
-//   city: "praia bacho",
-//   postal_code: 5232,
-//   country: "praia",
-//   telephone: 1010101009,
-//   mobile: 610015869,
-// });
-// a.save();
 
 const getLikesById = async (req, res, next) => {
   const adminId = req.params.id;
