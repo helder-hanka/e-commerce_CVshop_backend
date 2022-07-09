@@ -1,18 +1,8 @@
 const { validationResult } = require("express-validator");
 const Adress = require("../model/adminAdress");
 
-const admin1 = {
-  _id: "62b0cf62ab63b161acaaabc1",
-  name: "POLIE",
-};
-const admin2 = {
-  _id: "62b0cf89977a00d1d2bfa514",
-  name: "Carol",
-};
-
-const admin = admin2;
-
 const createAdress = async (req, res, next) => {
+  const adminId = req.userId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -22,7 +12,7 @@ const createAdress = async (req, res, next) => {
     firstname: req.body.firstname.toLowerCase(),
     lastname: req.body.lastname.toLowerCase(),
     gender: req.body.gender.toLowerCase(),
-    admin: admin,
+    admin: adminId,
     imageUrl: req.body.imageUrl,
     address_line_1: req.body.address_line_1.toLowerCase(),
     address_line_2: req.body.address_line_2.toLowerCase(),
@@ -33,24 +23,25 @@ const createAdress = async (req, res, next) => {
     mobile: req.body.mobile,
   });
   try {
-    const adress = await Adress.find({ admin: admin }).populate({
+    const adress = await Adress.find({ admin: adminId }).populate({
       path: "admin",
       select: "email",
     });
 
-    if (adress.length <= 0) {
-      await creatAdress.save();
-      return res.status(200).json({
-        message: "Adress created successfully",
-        adress: creatAdress,
-        admin: { _id: admin._id, name: admin.name },
-      });
+    if (!adress.length <= 0) {
+      return res.status(404).json({ message: "Adress already exists" });
     }
-    if (adress[0].admin._id.toString() !== admin._id) {
-      console.log("2 OK");
-      return res.status(404).json({ message: "Not authorized!" });
-    }
-    res.status(404).json({ message: "Adress already exists" });
+
+    await creatAdress.save();
+    const adressAdmin = await Adress.find({ admin: adminId }).populate({
+      path: "admin",
+      select: "email",
+    });
+    res.status(200).json({
+      message: "Adress created successfully",
+      adress: creatAdress,
+      admin: { _id: adressAdmin[0].admin._id, name: adressAdmin[0].firstname },
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -60,17 +51,15 @@ const createAdress = async (req, res, next) => {
 };
 
 const getAdressById = async (req, res, next) => {
-  const adminId = req.params.id;
-  const userId = req.params.id;
+  const adminId = req.userId;
+  const adminReqId = req.params.id;
   try {
-    const adress = await Adress.find({ admin: adminId }).populate({
+    const adress = await Adress.find({ admin: adminReqId }).populate({
       path: "admin",
       select: "email",
     });
 
-    console.log(adress.length);
     if (!adress.length || !adress[0].admin._id.toString()) {
-      console.log("ok");
       const error = new Error("Could not find adress");
       throw error;
     }
@@ -91,12 +80,10 @@ const getAdressById = async (req, res, next) => {
 
 const updatedAdress = async (req, res, next) => {
   const id = req.params.id;
-  const userId = req.params.id;
+  const adminId = req.params.id;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error("Validation failed, entered data is incorrect");
-    error.statusCode = 422;
-    throw err;
+    return res.status(422).json({ errors: errors.array() });
   }
 
   const firstname = req.body.firstname.toLowerCase();
@@ -123,7 +110,7 @@ const updatedAdress = async (req, res, next) => {
       throw error;
     }
 
-    if (userId !== adress[0].admin._id.toString()) {
+    if (adminId !== adress[0].admin._id.toString()) {
       const error = new Error("Not authorized!");
       error.statusCode = 404;
       throw error;
@@ -141,7 +128,6 @@ const updatedAdress = async (req, res, next) => {
     adress[0].mobile = mobile;
 
     const result = await adress[0].save();
-    console.log("result: => ", result);
     res.status(200).json({ message: "Adress updated!", adress: result });
   } catch (err) {
     if (!err.statusCode) {
