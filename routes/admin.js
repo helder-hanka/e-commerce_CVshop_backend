@@ -4,6 +4,7 @@ const productController = require("../controller/adminProducts");
 const adminLikesController = require("../controller/adminLikes");
 const adminAdress = require("../controller/adminAdress");
 const uploadImagesProducts = require("../middlewares/multerProducts");
+const uploadImageAdress = require("../middlewares/multerAdress");
 const isAuth = require("../middlewares/is-auth");
 
 router.post(
@@ -129,6 +130,7 @@ router.put(
 router.post(
   "/adress",
   isAuth,
+  uploadImageAdress.single("image"),
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()
