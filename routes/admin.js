@@ -176,6 +176,7 @@ router.get("/adress/:id", isAuth, adminAdress.getAdressById);
 router.put(
   "/adress/:id",
   isAuth,
+  uploadImageAdress.single("image"),
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()

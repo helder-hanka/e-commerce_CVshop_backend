@@ -95,7 +95,7 @@ const updatedAdress = async (req, res, next) => {
   const firstname = req.body.firstname.toLowerCase();
   const lastname = req.body.lastname.toLowerCase();
   const gender = req.body.gender.toLowerCase();
-  const imageUrl = req.body.imageUrl;
+  let imageUrl = req.body.image;
   const address_line_1 = req.body.address_line_1.toLowerCase();
   const address_line_2 = req.body.address_line_2.toLowerCase();
   const city = req.body.city.toLowerCase();
@@ -103,6 +103,13 @@ const updatedAdress = async (req, res, next) => {
   const country = req.body.country.toLowerCase();
   const telephone = req.body.telephone;
   const mobile = req.body.mobile;
+
+  if (req.file) {
+    imageUrl = req.file.path;
+  }
+  if (!imageUrl) {
+    return res.status(422).json({ message: "No file picked" });
+  }
 
   try {
     const adress = await Adress.find({ admin: id }).populate({
@@ -121,6 +128,10 @@ const updatedAdress = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+    if (imageUrl !== adress[0].imageUrl) {
+      clearImg(adress[0].imageUrl);
+    }
+
     adress[0].firstname = firstname;
     adress[0].lastname = lastname;
     adress[0].gender = gender;
