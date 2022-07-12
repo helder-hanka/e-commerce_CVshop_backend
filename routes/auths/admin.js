@@ -4,7 +4,7 @@ const authController = require("../../controller/auths/admin");
 const Admin = require("../../model/admin");
 
 router.post(
-  "/",
+  "/admin",
   [
     body("email")
       .isEmail()
