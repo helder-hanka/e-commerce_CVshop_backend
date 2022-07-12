@@ -10,12 +10,17 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
-    // admin_cvShop: {
-    //   type: Schema.Types.ObjectId,
-    //   required: true,
-    //   ref: "admin_cvShop",
-    // },
+    confirmeisplay: {
+      type: Boolean,
+      require: true,
+    },
+    admin_cvShop: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "admin_cvShop",
+    },
   },
+  { timestamps: true },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
