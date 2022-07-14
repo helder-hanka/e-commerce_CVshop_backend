@@ -16,10 +16,8 @@ router.post(
       .normalizeEmail()
       .custom(async (value, { req }) => {
         const image = req.file.path;
-        console.log("req router", req.file.path);
         const user = await AdminCvShop.findOne({ email: value });
         if (user) {
-          console.log("IMAGE", image);
           clearImg(image);
           return Promise.reject("E-mail already exist");
         }
