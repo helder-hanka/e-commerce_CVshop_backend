@@ -4,7 +4,7 @@ const authController = require("../../controller/auths/admin");
 const Admin = require("../../model/admin");
 
 router.post(
-  "/admin",
+  "/admin/signup",
   [
     body("email")
       .isEmail()
@@ -21,6 +21,6 @@ router.post(
   authController.signup
 );
 
-router.post("/login", authController.login);
+router.post("/admin/login", authController.login);
 
 module.exports = router;
