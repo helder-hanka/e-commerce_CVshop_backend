@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const AdminCvShop = require("../../model/adminCvShop");
+const bcrypt = require("bcrypt");
 
 const createAdminCvShop = async (req, res, next) => {
   const image = req.file.path;
@@ -13,10 +14,11 @@ const createAdminCvShop = async (req, res, next) => {
   }
   const { email, password } = req.body;
   const userId = "62ccf4381abde8c3fdae1982";
+  const hashedPw = await bcrypt.hash(password, 12);
 
   const create = new AdminCvShop({
     email: email,
-    password: password,
+    password: hashedPw,
     image: image,
     adminCvShop: userId,
   });
