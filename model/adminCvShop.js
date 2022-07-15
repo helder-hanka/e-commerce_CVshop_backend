@@ -19,13 +19,6 @@ const adminCvShopSchema = new Schema(
       required: true,
       ref: "AdminCvShop",
     },
-    // admin: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     required: true,
-    //     ref: "Admin",
-    //   },
-    // ],
   },
   { timestamps: true }
 );
