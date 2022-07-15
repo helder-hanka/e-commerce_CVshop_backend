@@ -11,8 +11,9 @@ router.post(
   upload.single("image"),
   [
     body("email")
-      .isEmail([{ blacklisted_chars: "@" }])
+      .isEmail()
       .withMessage("Please enter a valid email")
+      .normalizeEmail({ gmail_remove_dots: false })
       .custom(async (value, { req }) => {
         console.log("value", value);
         console.log("req", req.body.email);
