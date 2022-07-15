@@ -5,7 +5,6 @@ const Admin = require("../../model/admin");
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
-  const userId = req.userId;
   if (!errors.isEmpty()) {
     return res.status(422).json({ message: errors.array() });
   }
@@ -19,7 +18,6 @@ const signup = async (req, res, next) => {
     const admin = new Admin({
       email: email,
       password: hashedPw,
-      admin_cvShop: userId,
     });
 
     const result = await admin.save();
