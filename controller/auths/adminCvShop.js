@@ -19,7 +19,7 @@ const createAdminCvShop = async (req, res, next) => {
   const create = new AdminCvShop({
     email: email,
     password: hashedPw,
-    image: " req.file.path",
+    image: req.file.path,
     adminCvShop: userId,
   });
   try {
