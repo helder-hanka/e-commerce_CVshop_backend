@@ -5,9 +5,11 @@ const createAdminCvShopController = require("../../controller/auths/adminCvShop"
 const upload = require("../../middlewares/multerAdminCvShop");
 const AdminCvShop = require("../../model/adminCvShop");
 const clearImg = require("../../lib/clearImg");
+const isAuth = require("../../middlewares/auths/is-authAdminCvShop");
 
 router.post(
   "/admin_cv_shop/signup",
+  isAuth,
   upload.single("image"),
   [
     body("email")

@@ -56,7 +56,7 @@ const loginAdminCvShop = async (req, res, next) => {
 
     const token = jwt.sign(
       { email: loadAdminCvShop.email, userId: loadAdminCvShop._id.toString() },
-      "cvshop238cvshop238",
+      "cvshop238adminCvshop",
       { expiresIn: "1h" }
     );
 
