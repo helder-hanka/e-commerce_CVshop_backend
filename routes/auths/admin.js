@@ -2,9 +2,11 @@ const router = require("express").Router();
 const { body } = require("express-validator");
 const authController = require("../../controller/auths/admin");
 const Admin = require("../../model/admin");
+const isAuth = require("../../middlewares/auths/is-authAdminCvShop");
 
 router.post(
   "/admin/signup",
+  isAuth,
   [
     body("email")
       .isEmail()
