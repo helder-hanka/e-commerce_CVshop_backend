@@ -13,7 +13,7 @@ const createAdminCvShop = async (req, res, next) => {
     return res.status(200).json({ message: "No image provided" });
   }
   const { email, password } = req.body;
-  const userId = "62ccf4381abde8c3fdae1982";
+  const userId = req.userId;
   const hashedPw = await bcrypt.hash(password, 12);
 
   const create = new AdminCvShop({
