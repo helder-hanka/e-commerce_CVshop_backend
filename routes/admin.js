@@ -5,7 +5,7 @@ const adminLikesController = require("../controller/adminLikes");
 const adminAdress = require("../controller/adminAdress");
 const uploadImagesProducts = require("../middlewares/multerProducts");
 const uploadImageAdress = require("../middlewares/multerAdress");
-const isAuth = require("../middlewares/is-auth");
+const isAuth = require("../middlewares/auths/is-authAdmin");
 
 router.post(
   "/",
