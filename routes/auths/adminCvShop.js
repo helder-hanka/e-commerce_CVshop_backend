@@ -7,14 +7,15 @@ const AdminCvShop = require("../../model/adminCvShop");
 const clearImg = require("../../lib/clearImg");
 
 router.post(
-  "/admin_cv_shop",
+  "/admin_cv_shop/signup",
   upload.single("image"),
   [
     body("email")
-      .isEmail()
+      .isEmail([{ blacklisted_chars: "@" }])
       .withMessage("Please enter a valid email")
-      .normalizeEmail()
       .custom(async (value, { req }) => {
+        console.log("value", value);
+        console.log("req", req.body.email);
         const image = req.file.path;
         const user = await AdminCvShop.findOne({ email: value });
         if (user) {
@@ -26,6 +27,11 @@ router.post(
   ],
 
   createAdminCvShopController.createAdminCvShop
+);
+
+router.post(
+  "/admin_cv_shop/login",
+  createAdminCvShopController.loginAdminCvShop
 );
 
 module.exports = router;

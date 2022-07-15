@@ -14,8 +14,7 @@ router.post(
         if (adminDoc) {
           return Promise.reject("E-Mail adress already exist!");
         }
-      })
-      .normalizeEmail(),
+      }),
     body("password").trim().not().isEmpty(),
   ],
   authController.signup
