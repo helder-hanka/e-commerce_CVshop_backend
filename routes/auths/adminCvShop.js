@@ -15,6 +15,9 @@ router.post(
       .withMessage("Please enter a valid email")
       .normalizeEmail({ gmail_remove_dots: false })
       .custom(async (value, { req }) => {
+        if (!req.file) {
+          return Promise.reject("No image provided");
+        }
         const image = req.file.path;
         const user = await AdminCvShop.findOne({ email: value });
         if (user) {
