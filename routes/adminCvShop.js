@@ -52,9 +52,10 @@ router.post(
   adress.createAdress
 );
 
-router.get("/adress/:id", adress.getAdressById);
+router.get("/adress/:id", isAuth, adress.getAdressById);
 router.put(
   "/adress/:id",
+  isAuth,
   upload.single("image"),
 
   [
