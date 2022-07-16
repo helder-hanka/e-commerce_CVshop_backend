@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
-const Like = require("../model/adminLikes");
-const Admin = require("../model/admin");
+const Like = require("../../model/adminLikes");
+const Admin = require("../../model/admin");
 
 const getLikesById = async (req, res, next) => {
   const adminId = req.params.id;

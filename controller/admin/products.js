@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
-const Product = require("../model/product");
-const ProductsDeleted = require("../model/productsDeleted");
+const Product = require("../../model/product");
+const ProductsDeleted = require("../../model/productsDeleted");
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");

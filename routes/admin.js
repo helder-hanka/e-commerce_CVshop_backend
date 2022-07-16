@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
-const productController = require("../controller/adminProducts");
-const adminLikesController = require("../controller/adminLikes");
-const adminAdress = require("../controller/adminAdress");
+const productController = require("../controller/admin/products");
+const adminLikesController = require("../controller/admin/likes");
+const adminAdress = require("../controller/admin/adress");
 const uploadImagesProducts = require("../middlewares/multerProducts");
 const uploadImageAdress = require("../middlewares/multerAdress");
 const isAuth = require("../middlewares/auths/is-authAdmin");
