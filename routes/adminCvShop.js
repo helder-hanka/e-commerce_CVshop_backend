@@ -3,7 +3,6 @@ const { body } = require("express-validator");
 const adress = require("../controller/adminCvShop/adress");
 const upload = require("../middlewares/multerAdminCvShopAdress");
 const isAuth = require("../middlewares/auths/is-authAdminCvShop");
-const clearImage = require("../lib/clearImg");
 
 router.post(
   "/adress",
