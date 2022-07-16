@@ -18,16 +18,18 @@ router.post(
       .trim()
       .isLength({ min: 3 })
       .isString(),
-    body("gender").custom((value, { req }) => {
-      const gender = ["male", "female"];
-      const isValid = gender.some(
-        (arr) => arr === req.body.gender.toLowerCase()
-      );
-      if (!isValid) {
-        throw new Error(`Please use this gender: ${gender}`);
-      }
-      return true;
-    }),
+    body("gender")
+      .trim()
+      .custom((value, { req }) => {
+        const gender = ["male", "female"];
+        const isValid = gender.some(
+          (arr) => arr === req.body.gender.toLowerCase()
+        );
+        if (!isValid) {
+          throw new Error(`Please use this gender: ${gender}`);
+        }
+        return true;
+      }),
     body("address_line_1", "Please enter a text end least 3 characters")
       .trim()
       .isLength({ max: 50 })
