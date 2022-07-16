@@ -61,6 +61,27 @@ const createAdress = async (req, res, next) => {
   }
 };
 
+const getAdressById = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const adress = await Adress.findOne({ admin_cvShop: id }).populate(
+      "admin_cvShop",
+      "email"
+    );
+
+    if (!adress) {
+      return res.status(404).json({ message: "Could not find adress" });
+    }
+    res.status(200).json({ message: "Adress fetched", adress: adress });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   createAdress,
+  getAdressById,
 };

@@ -52,4 +52,6 @@ router.post(
   adress.createAdress
 );
 
+router.get("/adress/:id", adress.getAdressById);
+
 module.exports = router;
