@@ -1,6 +1,6 @@
 const multer = require("multer");
 var fs = require("fs");
-var dir = "./images/adress";
+var dir = "./images/adress/admin";
 
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
