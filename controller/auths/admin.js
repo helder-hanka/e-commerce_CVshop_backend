@@ -54,7 +54,7 @@ const login = async (req, res, next) => {
         email: loadAdmin.email,
         userId: loadAdmin._id.toString(),
       },
-      "cvshop238cvshop238",
+      "cvshop238Admin",
       { expiresIn: "1h" }
     );
     res.status(200).json({ token: token, userId: loadAdmin._id.toString() });
