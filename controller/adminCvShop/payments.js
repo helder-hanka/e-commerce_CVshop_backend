@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const Payment = require("../../model/adminCvShop/payments");
+const AdminCvShop = require("../../model/adminCvShop");
 const addMonths = require("../../lib/addMonths");
 
 const createPayment = async (req, res, next) => {
@@ -7,7 +8,7 @@ const createPayment = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(400).json(errors.array());
+    return res.status(400).json({ message: errors.array() });
   }
   const body = req.body;
   const payment = new Payment({
@@ -36,6 +37,25 @@ const createPayment = async (req, res, next) => {
   }
 };
 
+const getPayments = async (req, res, next) => {
+  const userId = req.userId;
+  try {
+    const result = await AdminCvShop.findById(
+      userId,
+      "email image adminCvShop createdAt updatedAt"
+    )
+      .populate("Payments")
+      .populate("Adress");
+    res.status(200).json({ message: "Fetched", result: result });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   createPayment,
+  getPayments,
 };
