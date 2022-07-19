@@ -12,6 +12,7 @@ const createPayment = async (req, res, next) => {
   }
   const body = req.body;
   const payment = new Payment({
+    amount: body.amount,
     payment_type: body.payment_type.toLowerCase(),
     provider: body.provider.toLowerCase(),
     account_no: body.account_no,

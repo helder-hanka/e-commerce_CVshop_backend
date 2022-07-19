@@ -7,6 +7,10 @@ const adminCvShopPaymentSchema = new Schema(
       required: true,
       enum: ["cash payment", "online payment"],
     },
+    amount: {
+      type: Number,
+      required: true,
+    },
     provider: {
       type: String,
     },

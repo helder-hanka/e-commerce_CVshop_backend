@@ -122,6 +122,7 @@ router.post(
       }),
     body("provider").trim().isString().isLength({ min: 3 }),
     body("account_no").trim().isInt(),
+    body("amount").trim().isInt(),
     body("permissions").trim().isBoolean(),
     body("comments").trim().isString().isLength({ min: 5 }),
     body("validatePaymentReceved").trim().isBoolean(),
