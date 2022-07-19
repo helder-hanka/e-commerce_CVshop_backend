@@ -1,11 +1,9 @@
 const { validationResult } = require("express-validator");
 const Adress = require("../../model/adminAdress");
-const path = require("path");
-const fs = require("fs");
+const clearImg = require("../../lib/clearImg");
 
 const createAdress = async (req, res, next) => {
   const adminId = req.userId;
-  const image = req.file.path;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -19,7 +17,7 @@ const createAdress = async (req, res, next) => {
     lastname: req.body.lastname.toLowerCase(),
     gender: req.body.gender.toLowerCase(),
     admin: adminId,
-    imageUrl: image,
+    imageUrl: req.file.path,
     address_line_1: req.body.address_line_1.toLowerCase(),
     address_line_2: req.body.address_line_2.toLowerCase(),
     city: req.body.city.toLowerCase(),
@@ -35,7 +33,7 @@ const createAdress = async (req, res, next) => {
     });
 
     if (!adress.length <= 0) {
-      clearImg(image);
+      clearImg(req.file.path);
       return res.status(404).json({ message: "Adress already exists" });
     }
     await creatAdress.save();
@@ -152,11 +150,6 @@ const updatedAdress = async (req, res, next) => {
     }
     next(err);
   }
-};
-
-const clearImg = (filePath) => {
-  filePath = path.join(__dirname, "..", filePath);
-  fs.unlink(filePath, (err) => console.log(err));
 };
 
 module.exports = {
