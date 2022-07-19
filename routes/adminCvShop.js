@@ -130,6 +130,12 @@ router.post(
   payment.createPayment
 );
 
-router.get("/payment", isAuth, payment.getPayments);
+router.get("/payments-admin-cv-shop", isAuth, payment.getPayments);
+router.get(
+  "/payments-All-admin-cv-shop/:id",
+  isAuth,
+  payment.getPaymentsAllAdminById
+);
+router.get("/payment-admin-cv-shop/:id", isAuth, payment.getPaymentById);
 
 module.exports = router;
