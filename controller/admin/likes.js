@@ -5,7 +5,7 @@ const Admin = require("../../model/admin");
 const getLikesById = async (req, res, next) => {
   const adminId = req.params.id;
   try {
-    const admin = await Admin.findById(adminId)
+    const admin = await Admin.findById(adminId, "email")
       .populate(
         "adress",
         "firstname lastname gender imageUrl citycountry city country"
