@@ -40,13 +40,16 @@ const createPayment = async (req, res, next) => {
 const getPayments = async (req, res, next) => {
   const userId = req.userId;
   try {
-    const result = await AdminCvShop.findById(
+    const payments = await AdminCvShop.findById(
       userId,
       "email image adminCvShop createdAt updatedAt"
     )
       .populate("Payments")
       .populate("Adress");
-    res.status(200).json({ message: "Fetched", result: result });
+    if (!payments.Payments.length) {
+      return res.status(404).json({ message: "Could not find payments" });
+    }
+    res.status(200).json({ message: "Fetched", payments: payments });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
