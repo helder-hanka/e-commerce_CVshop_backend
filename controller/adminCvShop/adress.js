@@ -41,7 +41,9 @@ const createAdress = async (req, res, next) => {
     admin_cvShop: userId,
   });
   try {
-    const existAdress = await Adress.findOne({ admincvShop: userId });
+    const existAdress = await Adress.findOne({ admin_cvShop: userId });
+    console.log(existAdress);
+    console.log(userId);
     if (existAdress) {
       clearImg(req.file.path);
       return res.status(404).json({ message: "Adress already exists" });
