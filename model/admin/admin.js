@@ -20,8 +20,8 @@ const adminSchema = new Schema(
       ref: "admin_cvShop",
     },
   },
-  { timestamps: true },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+  { timestamps: true }
 );
 
 adminSchema.virtual("adress", {
@@ -31,6 +31,11 @@ adminSchema.virtual("adress", {
 });
 adminSchema.virtual("likes", {
   ref: "Like",
+  localField: "_id",
+  foreignField: "admin",
+});
+adminSchema.virtual("Payments", {
+  ref: "AdminPayment",
   localField: "_id",
   foreignField: "admin",
 });
