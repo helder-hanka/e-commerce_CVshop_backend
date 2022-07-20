@@ -49,7 +49,7 @@ const loginAdminCvShop = async (req, res, next) => {
 
     const isEqual = await bcrypt.compare(password, adminShop.password);
     if (!isEqual) {
-      const error = new Error("Wrong password");
+      const error = new Error("Wrong password or email");
       error.statusCode = 401;
       throw err;
     }

@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Admin = require("../../model/admin");
+const Like = require("../../model/adminLikes");
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
@@ -18,9 +19,17 @@ const signup = async (req, res, next) => {
     const admin = new Admin({
       email: email,
       password: hashedPw,
+      display: false,
+      admin_cvShop: req.userId,
     });
 
     const result = await admin.save();
+    const like = new Like({
+      likes: 0,
+      admin: result._id,
+    });
+    await like.save();
+
     res.status(200).json({ message: "Admin created!", userId: result._id });
   } catch (err) {
     if (!err.statusCode) {
@@ -45,7 +54,7 @@ const login = async (req, res, next) => {
     loadAdmin = admin;
     const isEqual = await bcrypt.compare(password, admin.password);
     if (!isEqual) {
-      const error = new Error("Wrong passeword!");
+      const error = new Error("Wrong passeword or email!");
       error.statusCode = 401;
       throw error;
     }
