@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
 const Payment = require("../../model/adminCvShop/payments");
-const AdminCvShop = require("../../model/adminCvShop/admin");
+const AdminCvShop = require("../../model/adminCvShop");
 const addMonths = require("../../lib/addMonths");
 
 const createPayment = async (req, res, next) => {

@@ -1,8 +1,8 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const Admin = require("../../model/admin");
-const Like = require("../../model/adminLikes");
+const Admin = require("../../model/admin/admin");
+const Like = require("../../model/admin/likes");
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);

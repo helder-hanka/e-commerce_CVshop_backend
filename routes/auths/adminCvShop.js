@@ -3,7 +3,7 @@ const router = require("express").Router();
 const { body } = require("express-validator");
 const createAdminCvShopController = require("../../controller/auths/adminCvShop");
 const upload = require("../../middlewares/multerAdminCvShop");
-const AdminCvShop = require("../../model/adminCvShop");
+const AdminCvShop = require("../../model/adminCvShop/admin");
 const clearImg = require("../../lib/clearImg");
 const isAuth = require("../../middlewares/auths/is-authAdminCvShop");
 

@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const Adress = require("../../model/adminAdress");
+const Adress = require("../../model/admin/adress");
 const clearImg = require("../../lib/clearImg");
 
 const createAdress = async (req, res, next) => {

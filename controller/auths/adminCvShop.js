@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const AdminCvShop = require("../../model/adminCvShop");
+const AdminCvShop = require("../../model/adminCvShop/admin");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
