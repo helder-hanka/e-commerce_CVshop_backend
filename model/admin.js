@@ -10,9 +10,9 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
-    confirmeisplay: {
+    display: {
       type: Boolean,
-      require: true,
+      required: true,
     },
     admin_cvShop: {
       type: Schema.Types.ObjectId,
