@@ -1,6 +1,5 @@
 const { validationResult } = require("express-validator");
-const Payment = require("../../model/adminCvShop/payments");
-const AdminCvShop = require("../../model/adminCvShop");
+const Payment = require("../../model/admin/payments");
 const addMonths = require("../../lib/addMonths");
 
 const createPayment = async (req, res, next) => {
@@ -23,6 +22,7 @@ const createPayment = async (req, res, next) => {
     validatePaymentReceved: body.validatePaymentReceved,
     confirmPaymentGive: body.confirmPaymentGive,
     admin_cvShop: userId,
+    admin: body.admin,
   });
 
   try {
@@ -38,84 +38,6 @@ const createPayment = async (req, res, next) => {
   }
 };
 
-const getPayments = async (req, res, next) => {
-  const userId = req.userId;
-  try {
-    const payments = await AdminCvShop.findById(
-      userId,
-      "email image adminCvShop createdAt updatedAt"
-    )
-      .populate("Payments")
-      .populate("Adress");
-    if (!payments.Payments.length) {
-      return res.status(404).json({ message: "Could not find payments" });
-    }
-    res.status(200).json({ message: "Fetched", payments: payments });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-const getPaymentsAllAdminById = async (req, res, next) => {
-  const id = req.params.id;
-
-  try {
-    const payments = await AdminCvShop.findById(
-      id,
-      "email image adminCvShop createdAt updatedAt"
-    )
-      .populate("Payments")
-      .populate("Adress");
-    if (!payments) {
-      return res.status(404).json({ message: "Could not find payments" });
-    }
-    if (!payments.Payments.length) {
-      return res.status(404).json({ message: "Could not find payments" });
-    }
-    res.status(200).json({ message: "Fetched", payments: payments });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-const getPaymentById = async (req, res, next) => {
-  const id = req.params.id;
-  const userId = req.userId;
-
-  try {
-    const payments = await AdminCvShop.findById(
-      userId,
-      "email image adminCvShop createdAt updatedAt"
-    )
-      .populate({
-        path: "Payments",
-        match: { _id: id },
-      })
-      .populate("Adress");
-    if (!payments) {
-      return res.status(404).json({ message: "Could not find payments" });
-    }
-    if (!payments.Payments.length) {
-      return res.status(404).json({ message: "Could not find payments" });
-    }
-    res.status(200).json({ message: "Fetched", payments: payments });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 module.exports = {
   createPayment,
-  getPayments,
-  getPaymentsAllAdminById,
-  getPaymentById,
 };
