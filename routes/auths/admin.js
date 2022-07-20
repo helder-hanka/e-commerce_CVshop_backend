@@ -11,13 +11,13 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email.")
+      .normalizeEmail({ gmail_remove_dots: false })
       .custom(async (value, { req }) => {
         const adminDoc = await Admin.findOne({ email: value });
         if (adminDoc) {
           return Promise.reject("E-Mail adress already exist!");
         }
-      })
-      .normalizeEmail({ gmail_remove_dots: false }),
+      }),
     body("password").trim().not().isEmpty(),
   ],
   authController.signup
