@@ -6,11 +6,7 @@ const adminAdress = require("../controller/admin/adress");
 const uploadImagesProducts = require("../middlewares/multerProducts");
 const uploadImageAdress = require("../middlewares/multerAdminAdress");
 const isAuth = require("../middlewares/auths/is-authAdmin");
-const isAuthAdminCvShop = require("../middlewares/auths/is-authAdminCvShop");
 const createPayment = require("../controller/admin/payments");
-const Admin = require("../model/admin/admin");
-const splitJoinId = require("../lib/splitJoinId");
-
 router.post(
   "/",
   isAuth,
@@ -222,45 +218,6 @@ router.put(
   ],
   adminAdress.updatedAdress
 );
-
-router.post(
-  "/payment",
-  isAuthAdminCvShop,
-  [
-    body("payment_type")
-      .trim()
-      .isString()
-      .custom((value, { req }) => {
-        const paymentType = ["cash payment", "online payment"];
-        const isValid = paymentType.some(
-          (arr) => arr === req.body.payment_type.toLowerCase()
-        );
-        if (!isValid) {
-          throw new Error(`Please use this type: ${paymentType}`);
-        }
-        return true;
-      }),
-    body("admin")
-      .trim()
-      .isString()
-      .custom(async (value) => {
-        if (!value) {
-          return Promise.reject("The value is empty");
-        }
-        const result = await Admin.findById(value);
-        if (!result) {
-          const resultId = splitJoinId(value);
-          return Promise.reject(`The ID: ${resultId}, does not exist`);
-        }
-      }),
-    body("provider").trim().isString().isLength({ min: 3 }),
-    body("account_no").trim().isInt(),
-    body("amount").trim().isInt(),
-    body("permissions").trim().isBoolean(),
-    body("comments").trim().isString().isLength({ min: 5 }),
-    body("validatePaymentReceved").trim().isBoolean(),
-    body("confirmPaymentGive").trim().isBoolean(),
-  ],
-  createPayment.createPayment
-);
+router.get("/payment/", isAuth, createPayment.getPaymentsAdminAllById);
+router.get("/payment/:id", isAuth, createPayment.getPaymentById);
 module.exports = router;
