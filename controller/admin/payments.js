@@ -5,7 +5,7 @@ const getPaymentsAdminAllById = async (req, res, next) => {
   try {
     const payments = await Admin.findById(
       id,
-      "email image admin_cvShop createdAt updatedAt"
+      "email image display admin_cvShop createdAt updatedAt"
     )
       .populate("Payments")
       .populate("adress");
@@ -31,7 +31,7 @@ const getPaymentById = async (req, res, next) => {
   try {
     const payments = await Admin.findById(
       userId,
-      "email image adminCvShop createdAt updatedAt"
+      "email image display adminCvShop createdAt updatedAt"
     )
       .populate({
         path: "Payments",
