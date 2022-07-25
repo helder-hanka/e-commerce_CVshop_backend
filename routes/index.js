@@ -6,8 +6,8 @@ const authUser = require("./auths/user");
 
 module.exports = (app) => {
   app.use("/admin", products);
-  app.use("/auth", authAdmin);
-  app.use("/auth", authAdminCvShop);
+  app.use("/admin-auth", authAdmin);
+  app.use("/admincvshop-auth", authAdminCvShop);
   app.use("/admin_cv_shop", adminCvShop);
-  app.use("/auth", authUser);
+  app.use("/user-auth", authUser);
 };

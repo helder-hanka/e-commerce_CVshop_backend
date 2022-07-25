@@ -8,7 +8,7 @@ const clearImg = require("../../lib/clearImg");
 const isAuth = require("../../middlewares/auths/is-authAdminCvShop");
 
 router.post(
-  "/admin_cv_shop/signup",
+  "/signup",
   isAuth,
   upload.single("image"),
   [
@@ -33,9 +33,6 @@ router.post(
   createAdminCvShopController.createAdminCvShop
 );
 
-router.post(
-  "/admin_cv_shop/login",
-  createAdminCvShopController.loginAdminCvShop
-);
+router.post("/login", createAdminCvShopController.loginAdminCvShop);
 
 module.exports = router;

@@ -5,7 +5,7 @@ const Admin = require("../../model/admin/admin");
 const isAuth = require("../../middlewares/auths/is-authAdminCvShop");
 
 router.post(
-  "/admin/signup",
+  "/signup",
   isAuth,
   [
     body("email")
@@ -23,6 +23,6 @@ router.post(
   authController.signup
 );
 
-router.post("/admin/login", authController.login);
+router.post("/login", authController.login);
 
 module.exports = router;

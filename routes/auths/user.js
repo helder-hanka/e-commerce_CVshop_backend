@@ -4,7 +4,7 @@ const { body } = require("express-validator");
 const createUser = require("../../controller/auths/user");
 
 router.post(
-  "/user",
+  "/signup",
   [
     body("email")
       .isEmail()
