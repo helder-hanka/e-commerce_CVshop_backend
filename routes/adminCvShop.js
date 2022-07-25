@@ -7,6 +7,7 @@ const payment = require("../controller/adminCvShop/payments");
 const paymentAdmin = require("../controller/adminCvShop/administration/paymentAdmin");
 const Admin = require("../model/admin/admin");
 const splitJoinId = require("../lib/splitJoinId");
+const postingAdmin = require("../controller/adminCvShop/administration/decisionPostingAdmin");
 
 router.post(
   "/adress",
@@ -188,6 +189,14 @@ router.get(
   "/payment-admin/:adminId/payment/:paymentId",
   isAuth,
   paymentAdmin.getPaymentById
+);
+
+router.get("/admin-display/:min/:max", isAuth, postingAdmin.getDisplayAdmin);
+router.put(
+  "/admin-display/:id",
+  isAuth,
+  [body("display", "PLease put true or false").trim().isBoolean()],
+  postingAdmin.UpdateDisplayAdmin
 );
 
 module.exports = router;
