@@ -39,5 +39,10 @@ adminSchema.virtual("Payments", {
   localField: "_id",
   foreignField: "admin",
 });
+adminSchema.virtual("Products", {
+  ref: "Product",
+  localField: "_id",
+  foreignField: "admin",
+});
 
 module.exports = mongoose.model("Admin", adminSchema);
