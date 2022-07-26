@@ -21,4 +21,6 @@ router.post(
   createUser.signup
 );
 
+router.post("/login", createUser.login);
+
 module.exports = router;
