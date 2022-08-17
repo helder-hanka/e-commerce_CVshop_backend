@@ -8,9 +8,6 @@ const getProductList = async (req, res, next) => {
 
   let query = [
     {
-      $sort: { createdAt: -1 },
-    },
-    {
       $lookup: {
         from: "admins",
         localField: "admin",
@@ -50,6 +47,7 @@ const getProductList = async (req, res, next) => {
         confirmDisplay: 1,
         imageUrl: 1,
         admin: 1,
+        createdAt: 1,
         Admin: [
           {
             _id: "$Admin._id",
@@ -62,8 +60,6 @@ const getProductList = async (req, res, next) => {
     },
     { $unwind: "$Admin" },
     { $unwind: "$Adress" },
-    { $unset: ["_id"] },
-    // { $limit: 20 },
   ];
   const match = [
     {
@@ -87,6 +83,14 @@ const getProductList = async (req, res, next) => {
   if (rQuery.category && rQuery.category != "") {
     match[0].$match.category = new RegExp("^" + rQuery.category + "$", "i");
     query.push(...match);
+  }
+  if (
+    (rQuery.sortOrder && rQuery.sortOrder === "desc") ||
+    rQuery.sortOrder === "asc"
+  ) {
+    let sort = "";
+    sort = req.query.sortOrder === "asc" ? 1 : -1;
+    query.push({ $sort: { createdAt: sort } });
   }
   try {
     const totalItems = await Products.countDocuments(query);
