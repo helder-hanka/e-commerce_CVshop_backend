@@ -3,7 +3,7 @@ const authAdmin = require("./auths/admin");
 const authAdminCvShop = require("./auths/adminCvShop");
 const adminCvShop = require("./adminCvShop");
 const authUser = require("./auths/user");
-const user = require("./userShop");
+const user = require("./user");
 
 module.exports = (app) => {
   app.use("/admin", products);
@@ -11,5 +11,5 @@ module.exports = (app) => {
   app.use("/admincvshop-auth", authAdminCvShop);
   app.use("/admin_cv_shop", adminCvShop);
   app.use("/user-auth", authUser);
-  app.use("/shop", user);
+  app.use("/user", user);
 };
