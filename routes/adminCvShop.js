@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
 const adress = require("../controller/adminCvShop/adress");
-const upload = require("../middlewares/multerAdminCvShopAdress");
+const upload = require("../middlewares/multer");
 const isAuth = require("../middlewares/auths/is-authAdminCvShop");
 const payment = require("../controller/adminCvShop/payments");
 const paymentAdmin = require("../controller/adminCvShop/administration/paymentAdmin");
@@ -12,7 +12,7 @@ const postingAdmin = require("../controller/adminCvShop/administration/decisionP
 router.post(
   "/adress",
   isAuth,
-  upload.single("image"),
+  upload.single("adminCvShopAdressImg"),
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()
@@ -61,7 +61,7 @@ router.get("/adress/:id", isAuth, adress.getAdressById);
 router.put(
   "/adress/:id",
   isAuth,
-  upload.single("image"),
+  upload.single("adminCvShopAdressImg"),
 
   [
     body("firstname", "Please enter a text end least 3 characters")

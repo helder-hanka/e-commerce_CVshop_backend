@@ -3,14 +3,14 @@ const { body } = require("express-validator");
 const productController = require("../controller/admin/products");
 const adminLikesController = require("../controller/admin/likes");
 const adminAdress = require("../controller/admin/adress");
-const uploadImagesProducts = require("../middlewares/multerProducts");
-const uploadImageAdress = require("../middlewares/multerAdminAdress");
+const uploadImagesProducts = require("../middlewares/multer");
+const uploadImageAdress = require("../middlewares/multer");
 const isAuth = require("../middlewares/auths/is-authAdmin");
 const createPayment = require("../controller/admin/payments");
 router.post(
   "/",
   isAuth,
-  uploadImagesProducts.array("images", 4),
+  uploadImagesProducts.array("productImg", 4),
   [
     body("title", "Please enter a text end least 3 characters")
       .trim()
@@ -64,7 +64,7 @@ router.get("/:id", isAuth, productController.getProductId);
 router.put(
   "/:id",
   isAuth,
-  uploadImagesProducts.array("images", 4),
+  uploadImagesProducts.array("productImg", 4),
   [
     body("title", "Please enter a text end least 3 characters")
       .trim()
@@ -130,7 +130,7 @@ router.put(
 router.post(
   "/adress",
   isAuth,
-  uploadImageAdress.single("image"),
+  uploadImageAdress.single("adminAdressImg"),
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()
@@ -176,7 +176,7 @@ router.get("/adress/:id", isAuth, adminAdress.getAdressById);
 router.put(
   "/adress/:id",
   isAuth,
-  uploadImageAdress.single("image"),
+  uploadImageAdress.single("adminAdressImg"),
   [
     body("firstname", "Please enter a text end least 3 characters")
       .trim()

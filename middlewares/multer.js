@@ -1,6 +1,10 @@
 const multer = require("multer");
 const fs = require("fs");
 const imageUserAdress = "./images/adress/users";
+const adminAdressImg = "./images/adress/admin";
+const adminCvShopAdressImg = "./images/adress/adminCvShop";
+const adminCvShopImg = "./images/adminCvShop";
+const productImg = "./images/products";
 
 if (!fs.existsSync(imageUserAdress)) {
   fs.mkdirSync(imageUserAdress, { recursive: true });
@@ -10,6 +14,18 @@ const fileStorageEngine = multer.diskStorage({
     switch (file.fieldname) {
       case "imageUserAdress":
         cb(null, imageUserAdress);
+        break;
+      case "adminAdressImg":
+        cb(null, adminAdressImg);
+        break;
+      case "adminCvShopAdressImg":
+        cb(null, adminCvShopAdressImg);
+        break;
+      case "adminCvShopImg":
+        cb(null, adminCvShopImg);
+        break;
+      case "productImg":
+        cb(null, productImg);
         break;
       default:
         cb(null, "It's not valid");
