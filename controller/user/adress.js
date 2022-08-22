@@ -40,7 +40,7 @@ const createAdress = async (req, res, next) => {
       }
       return res.status(404).json({ message: "Adress already exists" });
     }
-    const a = await creatAdress.save();
+    await creatAdress.save();
     const adressUser = await Adress.find({ user: userId }).populate({
       path: "user",
       select: "email",

@@ -4,6 +4,7 @@ const { body } = require("express-validator");
 const Adress = require("../controller/user/adress");
 const uploadImageAdress = require("../middlewares/multer");
 const isAuth = require("../middlewares/auths/is-authUser");
+const product = require("../model/admin/product");
 
 router.get("/shop", shop.getProductList);
 
@@ -53,4 +54,9 @@ router.post(
   Adress.createAdress
 );
 
+router.post(
+  "/order",
+  [body("items.quantityTotal", "Please enter a number").trim().isInt()],
+  shop.postOrder
+);
 module.exports = router;
