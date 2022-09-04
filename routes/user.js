@@ -54,9 +54,6 @@ router.post(
   Adress.createAdress
 );
 
-router.post(
-  "/order",
-  [body("items.quantityTotal", "Please enter a number").trim().isInt()],
-  shop.postOrder
-);
+router.post("/order", isAuth, shop.postOrder);
+router.post("/orderInProgress", isAuth, shop.postOrderInProgress);
 module.exports = router;
