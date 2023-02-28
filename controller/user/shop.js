@@ -2,9 +2,12 @@ const Products = require("../../model/admin/product");
 const Order = require("../../model/user/order");
 const objLength = require("../../lib/object-length");
 const AdressUser = require("../../model/user/adress");
+const User = require("../../model/user/user");
 
-const OrderInProgress = require("../../model/user/orderInProgress");
+const OrderInProgressUser = require("../../model/user/orderInProgress");
 const OrderInProgressAdmin = require("../../model/admin/orderInProgress");
+const user = require("../../model/user/user");
+const orderInProgress = require("../../model/user/orderInProgress");
 
 function addOrderProgress(product) {
   const orderItem = product;
@@ -167,34 +170,10 @@ const postOrderInProgress = async (req, res, next) => {
   }
 
   try {
-    const name = await AdressUser.findOne({ user: userId }).populate(
-      "user",
-      "email"
-    );
+    const name = await AdressUser.findOne({ user: userId });
     if (!name) {
       return res.status(404).json({ message: "Could not find User !" });
     }
-    const resultProd = await products.products.map((i) => {
-      return { products: { ...i } };
-    });
-    const order = new OrderInProgress({
-      user: {
-        userId: userId,
-        name: name.firstname,
-        email: name.user.email,
-      },
-      userValidation: false,
-      adminValidation: false,
-      quantityTotal: products.items.quantityTotal,
-      priceTotal: products.items.priceTotal,
-      products: resultProd,
-    });
-    const user = {
-      userId: userId,
-      name: name.firstname,
-      email: name.user.email,
-      mobile: name.mobile,
-    };
 
     const result = addOrderProgress(products.products);
     if (!result) {
@@ -203,27 +182,73 @@ const postOrderInProgress = async (req, res, next) => {
         .json({ message: "Current order not registered !" });
     }
 
-    const postOrder = result.map(async (i) => {
-      const productsSave = [];
+    const saveOrderUser = new OrderInProgressUser({
+      products: result,
+      userId: userId,
+      userValidation: false,
+      adminValidation: false,
+    });
+
+    await saveOrderUser.save();
+
+    result.map(async (i) => {
+      const resultProducts = addOrderProgress(i.products);
+
       const a = new OrderInProgressAdmin({
-        priceTotal: i.priceTotal,
-        quantityTotal: i.quantityTotal,
-        products: i.products,
-        user: user,
+        products: resultProducts,
+        userId: userId,
+        adminId: i.admin,
         userValidation: i.userValidation || false,
         adminValidation: i.adminValidation || false,
       });
       const result = await a.save();
-      productsSave.push(await result);
-      // console.log("productsSave: ", productsSave);
-      return result;
+      if (!result) {
+        return res
+          .status(404)
+          .json({ message: "Current order not registered !" });
+      }
     });
-    console.log("productsSave: ", productsSave);
-    console.log("postOrder: ", postOrder);
-    return res
-      .status(200)
-      .json({ message: "Validated orders", order: postOrder });
+    return res.status(200).json({ message: "Validated orders" });
   } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+const getOrderInProgress = async (req, res, next) => {
+  const userId = req.userId;
+  const page = +req.query || 1;
+  let totalItems;
+  const ITEMS_PER_PAGE = 10;
+
+  try {
+    const getProducts = await OrderInProgressUser.find({
+      userId: userId,
+    })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
+
+    if (getProducts.length <= 0) {
+      return res.status(404).json({ message: "Products not found !" });
+    }
+
+    totalItems = await orderInProgress
+      .find({ userId: userId })
+      .countDocuments();
+
+    return res.status(200).json({
+      message: "Fetched",
+      products: getProducts,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+    });
+  } catch (error) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
@@ -274,4 +299,5 @@ module.exports = {
   getProductList,
   postOrder,
   postOrderInProgress,
+  getOrderInProgress,
 };

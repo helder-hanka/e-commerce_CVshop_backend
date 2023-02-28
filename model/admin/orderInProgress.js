@@ -2,22 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const currentAdminCommandSchema = new Schema(
   {
-    products: [
-      {
-        // product: {
-        type: Object,
-        require: true,
-        // },
-      },
-    ],
-    quantityTotal: {
-      type: Number,
-      required: true,
-    },
-    priceTotal: {
-      type: Number,
-      required: true,
-    },
     userValidation: {
       type: Boolean,
       required: true,
@@ -26,21 +10,14 @@ const currentAdminCommandSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    user: {
-      userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-      name: {
-        type: String,
-        required: true,
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    adminId: { type: Schema.Types.ObjectId, required: true, ref: "Admin" },
+    products: [
+      {
+        type: Object,
+        require: true,
       },
-      email: {
-        type: String,
-        required: true,
-      },
-      mobile: {
-        type: String,
-        required: true,
-      },
-    },
+    ],
   },
   { timestamps: true }
 );

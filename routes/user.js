@@ -7,6 +7,7 @@ const isAuth = require("../middlewares/auths/is-authUser");
 const product = require("../model/admin/product");
 
 router.get("/shop", shop.getProductList);
+router.get("/orderInProgress", isAuth, shop.getOrderInProgress);
 
 router.post(
   "/adress",
