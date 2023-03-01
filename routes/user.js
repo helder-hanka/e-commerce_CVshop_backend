@@ -57,4 +57,25 @@ router.post(
 
 router.post("/order", isAuth, shop.postOrder);
 router.post("/orderInProgress", isAuth, shop.postOrderInProgress);
+router.put(
+  "/validateOrder/:id?",
+  isAuth,
+  [
+    body("validate", "This validation must be a bolean!")
+      .trim()
+      .isBoolean()
+      .custom((value, { req }) => {
+        const validated = ["true"];
+        const isValid = validated.some(
+          (arr) => arr === req.body.validate.toString()
+        );
+        if (!isValid) {
+          throw new Error(`Please use this validation ${validated}`);
+        }
+        return true;
+      }),
+  ],
+  shop.validateOrder
+);
+
 module.exports = router;

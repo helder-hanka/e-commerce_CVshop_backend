@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const Products = require("../../model/admin/product");
 const Order = require("../../model/user/order");
 const objLength = require("../../lib/object-length");
@@ -256,6 +257,37 @@ const getOrderInProgress = async (req, res, next) => {
   }
 };
 
+const validateOrder = async (req, res, next) => {
+  const userId = req.userId;
+  const validation = req.body;
+  const productId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  try {
+    const produtcUser = await OrderInProgressUser.findById(productId);
+    if (!produtcUser) {
+      return res.status(404).json({ message: "Could not find product" });
+    }
+    if (produtcUser.userId.toString() !== userId) {
+      return res.status(404).json({ message: "Not authorisation" });
+    }
+    if (produtcUser.userValidation) {
+      return res.status(404).json({ message: "You have already validated" });
+    }
+
+    produtcUser.userValidation = validation.validate;
+    const result = await produtcUser.save();
+    res.status(200).json({ validate: "Validation udated" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 const postOrder = async (req, res, next) => {
   const userId = req.userId;
   const products = req.body;
@@ -300,4 +332,5 @@ module.exports = {
   postOrder,
   postOrderInProgress,
   getOrderInProgress,
+  validateOrder,
 };
