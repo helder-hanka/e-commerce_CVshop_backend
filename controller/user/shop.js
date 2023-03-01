@@ -327,10 +327,48 @@ const postOrder = async (req, res, next) => {
   }
 };
 
+const getOrders = async (req, res, next) => {
+  const userId = req.userId;
+  const page = +req.query || 1;
+  let totalItems;
+  const ITEMS_PER_PAGE = 10;
+
+  try {
+    const getOrders = await Order.find({
+      userId: userId,
+    })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
+
+    if (getOrders.length <= 0) {
+      return res.status(404).json({ message: "Products not found !" });
+    }
+
+    totalItems = await Order.find({ userId: userId }).countDocuments();
+
+    return res.status(200).json({
+      message: "Fetched",
+      products: getProducts,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+    });
+  } catch (error) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 module.exports = {
   getProductList,
   postOrder,
   postOrderInProgress,
   getOrderInProgress,
   validateOrder,
+  getOrders,
 };

@@ -4,10 +4,8 @@ const { body } = require("express-validator");
 const Adress = require("../controller/user/adress");
 const uploadImageAdress = require("../middlewares/multer");
 const isAuth = require("../middlewares/auths/is-authUser");
-const product = require("../model/admin/product");
 
 router.get("/shop", shop.getProductList);
-router.get("/orderInProgress", isAuth, shop.getOrderInProgress);
 
 router.post(
   "/adress",
@@ -56,7 +54,10 @@ router.post(
 );
 
 router.post("/order", isAuth, shop.postOrder);
+router.get("/order", isAuth, shop.getOrders);
+
 router.post("/orderInProgress", isAuth, shop.postOrderInProgress);
+router.get("/orderInProgress", isAuth, shop.getOrderInProgress);
 router.put(
   "/validateOrder/:id?",
   isAuth,
