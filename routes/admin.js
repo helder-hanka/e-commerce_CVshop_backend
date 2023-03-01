@@ -60,7 +60,7 @@ router.get(
   isAuth,
   productController.getProductsNameCategoryAll
 );
-router.get("/:id", isAuth, productController.getProductId);
+router.get("/productById/:id", isAuth, productController.getProductId);
 router.put(
   "/:id",
   isAuth,
@@ -220,4 +220,9 @@ router.put(
 );
 router.get("/payment/", isAuth, createPayment.getPaymentsAdminAllById);
 router.get("/payment/:id", isAuth, createPayment.getPaymentById);
+router.get(
+  "/OrderInProgressAdmin",
+  isAuth,
+  productController.getOrderInProgressAdmin
+);
 module.exports = router;

@@ -11,10 +11,16 @@ const currentUserCommandSchema = new Schema(
       required: true,
     },
     userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    adminId: { type: Schema.Types.ObjectId, required: true, ref: "Admin" },
     products: [
       {
-        type: Object,
-        require: true,
+        productId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          ref: "Product",
+        },
+        quantityTotal: { type: Number, required: true },
+        priceTotal: { type: Number, required: true },
       },
     ],
   },

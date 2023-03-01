@@ -10,48 +10,6 @@ const OrderInProgressAdmin = require("../../model/admin/orderInProgress");
 const user = require("../../model/user/user");
 const orderInProgress = require("../../model/user/orderInProgress");
 
-function addOrderProgress(product) {
-  const orderItem = product;
-  if (typeof orderItem != "object") {
-    return null;
-  }
-
-  orderItem.forEach((value) => {
-    delete value.Admin;
-  });
-
-  const ListAdminIdOrder = [
-    ...new Set(orderItem.map((value) => value.admin)).values(),
-  ];
-
-  const hashmapAdminOrder = new Map();
-
-  for (let i = 0; i < ListAdminIdOrder.length; i++) {
-    const orders = orderItem.filter(
-      (value) => value.admin == ListAdminIdOrder[i]
-    );
-
-    hashmapAdminOrder.set(ListAdminIdOrder[i], orders);
-  }
-  let newResult = [];
-
-  hashmapAdminOrder.forEach((value, key) => {
-    const reduced = value.reduce(
-      (r, { price, quantity }) => {
-        r["quantityTotal"] += quantity;
-        r["priceTotal"] += price * quantity;
-        return r;
-      },
-      { quantityTotal: 0, priceTotal: 0, admin: key }
-    );
-    reduced["products"] = value;
-
-    newResult.push(reduced);
-  });
-
-  return newResult;
-}
-
 const getProductList = async (req, res, next) => {
   const rQuery = req.query;
   const page = req.query.page;
@@ -175,35 +133,23 @@ const postOrderInProgress = async (req, res, next) => {
     if (!name) {
       return res.status(404).json({ message: "Could not find User !" });
     }
-
-    const result = addOrderProgress(products.products);
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Current order not registered !" });
-    }
-
-    const saveOrderUser = new OrderInProgressUser({
-      products: result,
-      userId: userId,
-      userValidation: false,
-      adminValidation: false,
-    });
-
-    await saveOrderUser.save();
-
-    result.map(async (i) => {
-      const resultProducts = addOrderProgress(i.products);
-
-      const a = new OrderInProgressAdmin({
-        products: resultProducts,
+    products.products.map(async (item) => {
+      const savOder = {
+        userValidation: false,
+        adminValidation: false,
         userId: userId,
-        adminId: i.admin,
-        userValidation: i.userValidation || false,
-        adminValidation: i.adminValidation || false,
-      });
-      const result = await a.save();
-      if (!result) {
+        adminId: item.Admin._id,
+        products: {
+          productId: item._id,
+          quantityTotal: item.quantity,
+          priceTotal: item.price,
+        },
+      };
+      const savOrderUser = OrderInProgressUser(savOder);
+      const savOrderAdmin = OrderInProgressAdmin(savOder);
+      const resultUser = await savOrderUser.save();
+      const resultAdmin = await savOrderAdmin.save();
+      if (!resultUser || !resultAdmin) {
         return res
           .status(404)
           .json({ message: "Current order not registered !" });

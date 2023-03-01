@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const Product = require("../../model/admin/product");
 const ProductsDeleted = require("../../model/admin/productsDeleted");
+const OrderInProgressAdmin = require("../../model/admin/orderInProgress");
+
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");
@@ -261,6 +263,46 @@ const moveImgInProductSDelete = (src) => {
   );
 };
 
+const getOrderInProgressAdmin = async (req, res, next) => {
+  const adminId = req.userId;
+  const page = +req.query || 1;
+  let totalItems;
+  const ITEMS_PER_PAGE = 10;
+  console.log(adminId);
+
+  try {
+    const getProducts = await OrderInProgressAdmin.find({
+      adminId: adminId,
+    })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
+
+    if (getProducts.length <= 0) {
+      return res.status(404).json({ message: "Products not found !" });
+    }
+
+    totalItems = await OrderInProgressAdmin.find({
+      adminId: adminId,
+    }).countDocuments();
+
+    return res.status(200).json({
+      message: "Fetched",
+      products: getProducts,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+    });
+  } catch (error) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   fs.unlink(filePath, (err) => console.log(err));
@@ -274,4 +316,5 @@ module.exports = {
   getProductId,
   updateProduct,
   deleteProduct,
+  getOrderInProgressAdmin,
 };
