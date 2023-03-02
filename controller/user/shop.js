@@ -3,12 +3,9 @@ const Products = require("../../model/admin/product");
 const Order = require("../../model/user/order");
 const objLength = require("../../lib/object-length");
 const AdressUser = require("../../model/user/adress");
-const User = require("../../model/user/user");
 
-const OrderInProgressUser = require("../../model/user/orderInProgress");
-const OrderInProgressAdmin = require("../../model/admin/orderInProgress");
-const user = require("../../model/user/user");
 const orderInProgress = require("../../model/user/orderInProgress");
+const BackOrder = require("../../model/adminAndUser/backorder");
 
 const getProductList = async (req, res, next) => {
   const rQuery = req.query;
@@ -141,15 +138,13 @@ const postOrderInProgress = async (req, res, next) => {
         adminId: item.Admin._id,
         products: {
           productId: item._id,
-          quantityTotal: item.quantity,
-          priceTotal: item.price,
+          quantityBuy: item.quantity,
+          priceBuy: item.price,
         },
       };
-      const savOrderUser = OrderInProgressUser(savOder);
-      const savOrderAdmin = OrderInProgressAdmin(savOder);
-      const resultUser = await savOrderUser.save();
-      const resultAdmin = await savOrderAdmin.save();
-      if (!resultUser || !resultAdmin) {
+      const savOrderUser = BackOrder(savOder);
+      const result = await savOrderUser.save();
+      if (!result) {
         return res
           .status(404)
           .json({ message: "Current order not registered !" });
@@ -171,9 +166,19 @@ const getOrderInProgress = async (req, res, next) => {
   const ITEMS_PER_PAGE = 10;
 
   try {
-    const getProducts = await OrderInProgressUser.find({
+    const getProducts = await BackOrder.find({
       userId: userId,
     })
+      .populate({
+        path: "adminId",
+        populate: {
+          path: "adress",
+          select:
+            "firstname lastname imageUrl address_line_1 city postal_code country mobile",
+        },
+        select: "email",
+      })
+      .populate({ path: "products.productId" })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE);
 
@@ -212,7 +217,7 @@ const validateOrder = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array() });
   }
   try {
-    const produtcUser = await OrderInProgressUser.findById(productId);
+    const produtcUser = await BackOrder.findById(productId);
     if (!produtcUser) {
       return res.status(404).json({ message: "Could not find product" });
     }
@@ -224,7 +229,7 @@ const validateOrder = async (req, res, next) => {
     }
 
     produtcUser.userValidation = validation.validate;
-    const result = await produtcUser.save();
+    await produtcUser.save();
     res.status(200).json({ validate: "Validation udated" });
   } catch (err) {
     if (!err.statusCode) {
