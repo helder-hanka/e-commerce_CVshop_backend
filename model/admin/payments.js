@@ -5,7 +5,7 @@ const adminPaymentSchema = new Schema(
     payment_type: {
       type: String,
       required: true,
-      enum: ["cash payment", "online payment"],
+      enum: ["cash payment", "online payment", "auto validate"],
     },
     amount: {
       type: Number,
@@ -47,7 +47,6 @@ const adminPaymentSchema = new Schema(
     },
     admin_cvShop: {
       type: Schema.Types.ObjectId,
-      required: true,
       ref: "AdminCvShop",
     },
   },

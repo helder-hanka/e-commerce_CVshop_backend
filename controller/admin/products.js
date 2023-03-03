@@ -1,11 +1,16 @@
 const { validationResult } = require("express-validator");
 const Product = require("../../model/admin/product");
 const ProductsDeleted = require("../../model/admin/productsDeleted");
-const OrderInProgressAdmin = require("../../model/admin/orderInProgress");
+const BackOrder = require("../../model/adminAndUser/backorder");
+const Orders = require("../../model/adminAndUser/Order");
+const Payments = require("../../model/admin/payments");
 
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");
+const backorder = require("../../model/adminAndUser/backorder");
+const calculatePercentage = require("../../lib/calculatePercentage");
+const addMonths = require("../../lib/addMonths");
 
 const createProduct = async (req, res, next) => {
   const admin = req.userId;
@@ -255,25 +260,26 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
-const moveImgInProductSDelete = (src) => {
-  src.map((i) =>
-    fse.move(i, `./images/productsDelete/${i.slice(16)}`, (err) => {
-      if (err) return console.error(err);
-    })
-  );
-};
-
 const getOrderInProgressAdmin = async (req, res, next) => {
   const adminId = req.userId;
   const page = +req.query || 1;
   let totalItems;
   const ITEMS_PER_PAGE = 10;
-  console.log(adminId);
 
   try {
-    const getProducts = await OrderInProgressAdmin.find({
+    const getProducts = await BackOrder.find({
       adminId: adminId,
     })
+      .populate({
+        path: "adminId",
+        populate: {
+          path: "adress",
+          select:
+            "firstname lastname imageUrl address_line_1 city postal_code country mobile",
+        },
+        select: "email",
+      })
+      .populate({ path: "products.productId" })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE);
 
@@ -281,7 +287,7 @@ const getOrderInProgressAdmin = async (req, res, next) => {
       return res.status(404).json({ message: "Products not found !" });
     }
 
-    totalItems = await OrderInProgressAdmin.find({
+    totalItems = await BackOrder.find({
       adminId: adminId,
     }).countDocuments();
 
@@ -303,6 +309,95 @@ const getOrderInProgressAdmin = async (req, res, next) => {
   }
 };
 
+const validateOrder = async (req, res, next) => {
+  const userId = req.userId;
+  const validation = req.body;
+  const productId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  try {
+    const produtcAdmin = await BackOrder.findById(productId).populate({
+      path: "products.productId",
+      select: "quantity",
+    });
+    if (!produtcAdmin) {
+      return res.status(404).json({ message: "Could not find product" });
+    }
+    if (produtcAdmin.adminId.toString() !== userId) {
+      return res.status(404).json({ message: "Not authorisation" });
+    }
+
+    if (!produtcAdmin.userValidation) {
+      return res.status(404).json({ message: "wait for buyer validation" });
+    }
+    if (produtcAdmin.adminValidation) {
+      return res.status(404).json({ message: "You have already validation" });
+    }
+
+    produtcAdmin.adminValidation = validation.validate;
+    await produtcAdmin.save();
+
+    const savOder = {
+      userId: produtcAdmin.userId,
+      adminId: produtcAdmin.adminId,
+      userValidation: produtcAdmin.userValidation,
+      adminValidation: produtcAdmin.adminValidation,
+      products: {
+        productId: produtcAdmin.products[0].productId,
+        quantityBuy: produtcAdmin.products[0].quantityBuy,
+        priceBuy: produtcAdmin.products[0].priceBuy,
+      },
+    };
+    await Orders(savOder).save();
+
+    let newQuantity = (produtcAdmin.products[0].productId.quantity -=
+      produtcAdmin.products[0].quantityBuy);
+
+    await Product.findByIdAndUpdate(produtcAdmin.products[0].productId, {
+      quantity: newQuantity,
+    });
+    await produtcAdmin.save();
+
+    const totalPercentage = 20;
+    const resultPrice = calculatePercentage(
+      totalPercentage,
+      produtcAdmin.products[0].priceBuy
+    );
+
+    const savePayment = new Payments({
+      amount: resultPrice,
+      payment_type: "auto validate",
+      expiry: addMonths(1),
+      permissions: true,
+      paymentDate: new Date(),
+      validatePaymentReceved: false,
+      confirmPaymentGive: false,
+      admin: userId,
+    });
+
+    await savePayment.save();
+
+    await backorder.findByIdAndDelete(productId);
+
+    res.status(200).json({ validate: "Validation udated" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+const moveImgInProductSDelete = (src) => {
+  src.map((i) =>
+    fse.move(i, `./images/productsDelete/${i.slice(16)}`, (err) => {
+      if (err) return console.error(err);
+    })
+  );
+};
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   fs.unlink(filePath, (err) => console.log(err));
@@ -317,4 +412,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getOrderInProgressAdmin,
+  validateOrder,
 };

@@ -225,4 +225,24 @@ router.get(
   isAuth,
   productController.getOrderInProgressAdmin
 );
+router.put(
+  "/validateOrderAdmin/:id",
+  [
+    body("validate", "This validation must be a bolean")
+      .trim()
+      .isBoolean()
+      .custom((value, { req }) => {
+        const validated = ["true"];
+        const isValid = validated.some(
+          (arr) => arr === req.body.validate.toString()
+        );
+        if (!isValid) {
+          throw new Error(`Please use this validation ${validated}`);
+        }
+        return true;
+      }),
+  ],
+  isAuth,
+  productController.validateOrder
+);
 module.exports = router;
