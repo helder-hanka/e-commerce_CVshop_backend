@@ -53,7 +53,6 @@ router.post(
   Adress.createAdress
 );
 
-router.post("/order", isAuth, shop.postOrder);
 router.get("/order", isAuth, shop.getOrders);
 
 router.post("/orderInProgress", isAuth, shop.postOrderInProgress);
