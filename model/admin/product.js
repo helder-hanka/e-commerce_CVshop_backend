@@ -67,6 +67,7 @@ const productsSchema = new Schema(
         "computerScience",
         "books",
         "accessory",
+        "sport",
       ],
     },
     confirmDisplay: {
