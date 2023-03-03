@@ -28,6 +28,34 @@ const productsSchema = new Schema(
       type: Number,
       required: true,
     },
+    colors: [
+      {
+        type: String,
+      },
+    ],
+    size: [
+      {
+        type: String,
+      },
+    ],
+    origin: {
+      type: String,
+    },
+    marque: {
+      type: String,
+    },
+    occasion: {
+      type: Boolean,
+      required: true,
+    },
+    men: {
+      type: Boolean,
+      required: true,
+    },
+    women: {
+      type: Boolean,
+      required: true,
+    },
     category: {
       type: String,
       required: true,
@@ -38,6 +66,7 @@ const productsSchema = new Schema(
         "decorations",
         "computerScience",
         "books",
+        "accessory",
       ],
     },
     confirmDisplay: {
