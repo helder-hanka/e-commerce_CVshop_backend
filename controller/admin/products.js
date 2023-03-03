@@ -14,6 +14,7 @@ const addMonths = require("../../lib/addMonths");
 
 const createProduct = async (req, res, next) => {
   const admin = req.userId;
+  const body = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -24,15 +25,22 @@ const createProduct = async (req, res, next) => {
   }
   const files = req.files.map((p) => p.path);
   const product = new Product({
-    title: req.body.title.toLowerCase(),
-    description: req.body.description,
+    title: body.title.toLowerCase(),
+    description: body.description,
     imageUrl: files,
-    like: req.body.like,
-    quantity: req.body.quantity,
-    price: req.body.price,
-    category: req.body.category.toLowerCase(),
-    confirmDisplay: req.body.confirmDisplay,
+    like: body.like,
+    quantity: body.quantity,
+    price: body.price,
+    category: body.category.toLowerCase(),
+    confirmDisplay: body.confirmDisplay,
     admin: admin,
+    colors: body.colors,
+    size: body.size,
+    origin: body.origin,
+    marque: body.marque,
+    occasion: body.occasion,
+    men: body.men,
+    women: body.women,
   });
   try {
     await product.save();
@@ -155,19 +163,28 @@ const getProductId = async (req, res, next) => {
 
 const updateProduct = async (req, res, next) => {
   const id = req.params.id;
+  const body = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
   const admin = req.userId;
-  const title = req.body.title.toLowerCase();
-  const description = req.body.description;
-  let imageUrl = req.body.images;
-  const like = req.body.like;
-  const quantity = req.body.quantity;
-  const price = req.body.price;
-  const category = req.body.category.toLowerCase();
-  const confirmDisplay = req.body.confirmDisplay;
+  const title = body.title.toLowerCase();
+  const description = body.description;
+  let imageUrl = body.images;
+  const like = body.like;
+  const quantity = body.quantity;
+  const price = body.price;
+  const category = body.category.toLowerCase();
+  const confirmDisplay = body.confirmDisplay;
+  const colors = body.colors.toLowerCase();
+  const size = body.size.toLowerCase();
+  const origin = body.origin.map((i) => i);
+  const marque = body.marque.toLowerCase();
+  const occasion = body.occasion;
+  const men = body.men;
+  const women = body.women;
+
   if (req.files.length) {
     const files = req.files.map((p) => p.path);
     imageUrl = files;
@@ -202,8 +219,15 @@ const updateProduct = async (req, res, next) => {
     product.like = like;
     product.quantity = quantity;
     product.price = price;
-    product.category = category.toLowerCase();
+    product.category = category;
     product.confirmDisplay = confirmDisplay;
+    product.colors = colors;
+    product.size = size;
+    product.origin = origin;
+    product.marque = marque;
+    product.occasion = occasion;
+    product.men = men;
+    product.women = women;
     const result = await product.save();
 
     res.status(200).json({
