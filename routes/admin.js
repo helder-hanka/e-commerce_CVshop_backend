@@ -32,6 +32,8 @@ router.post(
           "decorations",
           "computerScience",
           "books",
+          "accessory",
+          "sport",
         ];
 
         function checkAvailability(arr, val) {
@@ -50,6 +52,25 @@ router.post(
       "confirmDisplay",
       "Please confirm the display true or false"
     ).isBoolean(),
+    body("colors", "Please enter a text end least 6 characters")
+      .trim()
+      .isLength({ min: 6 })
+      .isString(),
+    body("size", "Please enter a text end least 6 characters")
+      .trim()
+      .isLength({ min: 6 })
+      .isString(),
+    body("origin", "Please enter a text end least 6 characters")
+      .trim()
+      .isLength({ min: 6 })
+      .isString(),
+    body("marque", "Please enter a text end least 3 characters")
+      .trim()
+      .isLength({ min: 3 })
+      .isString(),
+    body("occasion", "Please confirm the display true or false").isBoolean(),
+    body("men", "Please confirm the display true or false").isBoolean(),
+    body("women", "Please confirm the display true or false").isBoolean(),
   ],
   productController.createProduct
 );
