@@ -239,45 +239,6 @@ const validateOrder = async (req, res, next) => {
   }
 };
 
-const postOrder = async (req, res, next) => {
-  const userId = req.userId;
-  const products = req.body;
-
-  if (objLength(products.items) !== 2 || objLength(products.products) <= 0) {
-    return res.status(422).json({ message: "Order is empty" });
-  }
-
-  try {
-    const name = await AdressUser.findOne({ user: userId }).populate(
-      "user",
-      "email"
-    );
-    if (!name) {
-      return res.status(404).json("Could not find User !");
-    }
-    const resultProd = await products.products.map((i) => {
-      return { products: i };
-    });
-    const order = new Order({
-      user: {
-        userId: userId,
-        name: name.firstname,
-        email: name.user.email,
-      },
-      quantityTotal: products.items.quantityTotal,
-      priceTotal: products.items.priceTotal,
-      products: resultProd,
-    });
-    const result = await order.save();
-    return res.status(200).json({ message: "Validated orders", order: result });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 const getOrders = async (req, res, next) => {
   const userId = req.userId;
   const page = +req.query || 1;
@@ -317,7 +278,6 @@ const getOrders = async (req, res, next) => {
 
 module.exports = {
   getProductList,
-  postOrder,
   postOrderInProgress,
   getOrderInProgress,
   validateOrder,
