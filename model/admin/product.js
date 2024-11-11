@@ -33,6 +33,12 @@ const productsSchema = new Schema(
         type: String,
       },
     ],
+    // colors: [
+    //   {
+    //     color: { type: String, required: true },
+    //     quantity: { type: String, required: true },
+    //   },
+    // ],
     size: [
       {
         type: String,
@@ -56,12 +62,26 @@ const productsSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    // childBoy: { à rajouter
+    //   type: Boolean,
+    //   required: true,
+    // },
+    // childGirl: {
+    //   type: Boolean,
+    //   required: true,
+    // },
+    // auteur: {type: String},
+    // compositionMateriel: {type: String},
+    // brand:{
+    //   type: String,
+    //   required: true
+    // },
     category: {
       type: String,
       required: true,
       enum: [
         "clothes",
-        "cars",
+        // "cars",
         "homeAppliance",
         "decorations",
         "computerScience",
