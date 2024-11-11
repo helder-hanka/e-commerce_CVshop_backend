@@ -61,10 +61,15 @@ const getProductsAdminIdAll = async (req, res, next) => {
     const products = await Product.find({ admin: admin }).populate({
       path: "admin",
       select: "email",
+      populate: {
+        path: "adress",
+        select:
+          "firstname lastname imageUrl address_line_1 city postal_code country mobile",
+      },
     });
 
     const isAdmin = products.map((adm) => adm.admin);
-    if (isAdmin === null) {
+    if (isAdmin.length === null) {
       return res
         .status(404)
         .json({ message: "Could not find admin products!" });
