@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const { SERVER_PORT } = require("./env");
-console.log("SERVER_PORT: ", SERVER_PORT);
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const path = require("path");
+const { SERVER_PORT, DB_PORT, DB_HOST } = require("./env");
 
 const app = express();
 
@@ -14,6 +16,25 @@ app.use(
     origin: "http://localhost:3001",
   })
 );
+app.use(bodyParser.json());
+
+app.use("./images/products", express.static(path.join(__dirname, "images")));
+app.use(
+  "./images/productsDelete",
+  express.static(path.join(__dirname, "images"))
+);
+app.use("./images/adress", express.static(path.join(__dirname, "images")));
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 app.use((req, res, next) => {
   const totalCount = req.headers["x-total-count"];
   console.log("totalCount :", totalCount);
@@ -21,13 +42,26 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+require("./routes")(app);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
 });
 
-const server = app.listen(SERVER_PORT, () => {
-  console.log(`Server is listening on : ${SERVER_PORT}`);
-});
+mongoose
+  .connect(`mongodb://${DB_HOST}:${DB_PORT}/CVshop`)
+  .then((server) => {
+    app.listen(SERVER_PORT, () => {
+      console.log(`Server is listening on : ${SERVER_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 process.on("unhandledRejection", (error) => {
   console.error("unhandledRejection", JSON.stringify(error), error.stack);
@@ -44,5 +78,3 @@ process.on("beforeExit", () => {
     if (error) console.error(JSON.stringify(error), error.stack);
   });
 });
-
-module.exports = server;
