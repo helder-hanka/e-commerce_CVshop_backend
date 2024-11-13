@@ -20,3 +20,11 @@ http://localhost:3000/admincvshop-auth/login
 
 http://localhost:3000/user-auth/signup
 http://localhost:3000/user-auth/login
+
+<!-- Pour la gestion technique et administrative. -->
+
+admin.cvshop@gmail.com
+
+<!-- passW -->
+
+test
